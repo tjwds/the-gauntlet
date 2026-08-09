@@ -1,0 +1,88 @@
+@import "@heroui/react/styles";
+
+/*
+ * HeroUI drives every accent surface — buttons, chips, focus rings, soft fills
+ * — off `--accent`, so this is the whole override.
+ *
+ * Deliberately not Spotify green: Spotify's design guidelines list their green
+ * among the brand elements an integration's own logo mustn't borrow, and the
+ * accent is what colours the app's mark. This violet also stays clear of
+ * HeroUI's `danger`, `warning` and `success` hues, so a green chip still reads
+ * as a success rather than as the brand.
+ */
+@layer base {
+  :root,
+  .light,
+  [data-theme="light"] {
+    --accent: oklch(0.55 0.21 288); /* #7250e2 */
+    --accent-foreground: oklch(0.9911 0 0); /* #fcfcfc — 5.2:1 on the accent */
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+}
+
+@theme {
+  /* One column of the board. Seven of these don't fit a laptop, which is why
+     the board scrolls sideways and collapses to three below 900px. */
+  --spacing-column: 244px;
+  --breakpoint-board: 900px;
+}
+
+@layer components {
+  /*
+   * Album art placeholder: the crossed box that stands in before Spotify's CDN
+   * answers, and for the rare album with no artwork at all.
+   */
+  .art-placeholder {
+    --art-cross: color-mix(in oklab, var(--muted) 30%, transparent);
+    background-color: var(--surface-tertiary);
+    background-image:
+      linear-gradient(
+        to top right,
+        transparent calc(50% - 0.5px),
+        var(--art-cross) calc(50% - 0.5px),
+        var(--art-cross) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+      ),
+      linear-gradient(
+        to top left,
+        transparent calc(50% - 0.5px),
+        var(--art-cross) calc(50% - 0.5px),
+        var(--art-cross) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+      );
+  }
+
+  /* Two lines then an ellipsis: album titles run long at 244px. */
+  .clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  /* The level meter that replaces the play button on the card now playing. */
+  .eq-bar {
+    animation: eq-bounce 900ms ease-in-out infinite;
+    transform-origin: bottom;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eq-bar {
+      animation: none;
+    }
+  }
+}
+
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}

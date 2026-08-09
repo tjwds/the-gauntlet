@@ -1,0 +1,752 @@
+{
+  "_readme": {
+    "context": "Every user-facing string in the product UI, one entry per unique string. Object key = stable ID. `original` is the string as first drafted; `translation` is where a tone edit goes. They match — nothing is outstanding. Braces mark runtime values: {album}, {n}; square brackets in login.blurb mark link text. Screens are referred to by number: 01 Log in, 02 Set up playlists, 03 First records, 04 Board, 05 Playing, 06 Album detail, 07 Add albums, 08 Narrow board, 09 Settings. Excluded on purpose: sample data (album/artist/track names, durations, dates, 'joe'), icon glyphs (their aria-labels are here instead), and Spotify scope identifiers (their descriptions are here). Strings that appear on more than one screen are listed once, with every location in the context.",
+    "original": "",
+    "translation": ""
+  },
+  "app.name": {
+    "context": "Product name. Top-left of every in-app header next to the G mark; also the login screen heading and the browser title.",
+    "original": "The Gauntlet",
+    "translation": "The Gauntlet"
+  },
+  "login.blurb": {
+    "context": "The only explanatory copy on the login screen, replacing three numbered steps. The bracketed part is a link to the blog post describing the method. Nothing else in the product explains the rules.",
+    "original": "A kanban visualization tool for [Joe's system for giving records a fair shake by listening to them five times](https://blog.joewoods.dev/music/the-album-gauntlet-over-engineered-music-appreciation/).",
+    "translation": "A kanban visualization tool for [Joe's system for giving records a fair shake by listening to them five times](https://blog.joewoods.dev/music/the-album-gauntlet-over-engineered-music-appreciation/)."
+  },
+  "nav.addAlbums": {
+    "context": "Header button, screens 04-09. Also repeated as a full-width ghost button at the bottom of the Queue column on 04 and 08. Opens the add-albums modal.",
+    "original": "+ Add albums",
+    "translation": "+ Add albums"
+  },
+  "nav.settings": {
+    "context": "Header button, screens 04-09.",
+    "original": "Settings",
+    "translation": "Settings"
+  },
+  "card.play.aria": {
+    "context": "Screen-reader label for the play button that appears over album art on hover. Every card, every screen.",
+    "original": "Play album",
+    "translation": "Play album"
+  },
+  "card.more.aria": {
+    "context": "Screen-reader label for the ⋯ overflow button on a card. Menu contains Play, Move to, Mark done, Abandon, Remove, Open in Spotify.",
+    "original": "More",
+    "translation": "More"
+  },
+  "card.open.aria": {
+    "context": "Screen-reader label for the click target covering the card body, which opens the album drawer. {album} is the album title.",
+    "original": "Open {album}",
+    "translation": "Open {album}"
+  },
+  "common.close.aria": {
+    "context": "Screen-reader label on the ✕ button and on the scrim behind a modal or drawer. Screens 06 and 07.",
+    "original": "Close",
+    "translation": "Close"
+  },
+  "column.queue.name": {
+    "context": "Column heading, first column. Also the band label above it, the playlist suffix (Gauntlet · Queue), and the destination named in the add-albums footer.",
+    "original": "Queue",
+    "translation": "Queue"
+  },
+  "column.stage.name": {
+    "context": "Heading for the four middle columns, where {n} is 1-4. Rendered with a multiplication sign, not the letter x. Also used as a chip on cards in the narrow board and as a playlist suffix.",
+    "original": "×{n}",
+    "translation": "×{n}"
+  },
+  "column.done.name": {
+    "context": "Column heading, second-to-last. Also a playlist suffix and referenced in several progress strings.",
+    "original": "Done",
+    "translation": "Done"
+  },
+  "column.abandoned.name": {
+    "context": "Column heading, last. Records dropped on purpose. Also a playlist suffix.",
+    "original": "Abandoned",
+    "translation": "Abandoned"
+  },
+  "band.inProgress": {
+    "context": "Uppercase band label spanning the four ×N columns, above the column headings. Screens 04-08.",
+    "original": "In progress",
+    "translation": "In progress"
+  },
+  "band.finished": {
+    "context": "Uppercase band label spanning Done and Abandoned.",
+    "original": "Finished",
+    "translation": "Finished"
+  },
+  "column.x4.empty": {
+    "context": "Empty state inside the ×4 column on the full board. Two lines. Reassures that you never file cards here yourself.",
+    "original": "Nothing yet.",
+    "translation": "Nothing yet."
+  },
+  "column.empty.short": {
+    "context": "One-word empty state used in abbreviated boards behind a modal or drawer.",
+    "original": "Empty",
+    "translation": "Empty"
+  },
+  "board.dropSlot.title": {
+    "context": "Green dashed placeholder shown in a column while dragging a card over it.",
+    "original": "Drop here",
+    "translation": "Drop here"
+  },
+  "board.dropSlot.detail": {
+    "context": "Second line of the drag placeholder, naming what will happen. {album} is the dragged album, {column} the destination.",
+    "original": "{album} → {column}",
+    "translation": "{album} → {column}"
+  },
+  "card.meta": {
+    "context": "Third line on a board card. {year}, {n} track count, {duration} total runtime. Abbreviated because column width is 244px.",
+    "original": "{year} · {n} trk · {duration}",
+    "translation": "{year} · {n} trk · {duration}"
+  },
+  "card.dots.label": {
+    "context": "Text beside the five progress dots on a card. {n} is completed listens, always out of five.",
+    "original": "{n} of 5",
+    "translation": "{n} of 5"
+  },
+  "card.pass": {
+    "context": "Progress row under a card, shown only while a pass is underway. {done} tracks heard so far this pass, {total} on the album. Empties if the listener skips a track.",
+    "original": "{done} / {total}",
+    "translation": "{done} / {total}"
+  },
+  "card.playing.position": {
+    "context": "Replaces the meta line on the card currently playing. Deliberately about position in the album, not the track. {time} is time left in the whole record.",
+    "original": "track {n} of {total} · {time} left",
+    "translation": "track {n} of {total} · {time} left"
+  },
+  "card.done.meta": {
+    "context": "Meta line on cards in the Done column. {date} is when it reached Done, read from the playlist add date.",
+    "original": "finished {date}",
+    "translation": "finished {date}"
+  },
+  "card.abandoned.meta": {
+    "context": "Meta line on cards in the Abandoned column. {date} is when it was dropped.",
+    "original": "dropped {date}",
+    "translation": "dropped {date}"
+  },
+  "card.movedChip": {
+    "context": "Green chip on a card that just advanced a column, alongside the toast. Screen 05.",
+    "original": "moved just now",
+    "translation": "moved just now"
+  },
+  "login.cta": {
+    "context": "The primary button on the login screen. Full width, green.",
+    "original": "Log in with Spotify",
+    "translation": "Log in with Spotify"
+  },
+  "login.premium": {
+    "context": "Small print under the login button. Two sentences.",
+    "original": "Spotify Premium is required to play inside the app; free accounts can still use the board and open albums in the Spotify app.",
+    "translation": "Spotify Premium is required to play inside the app; free accounts can still use the board and open albums in the Spotify app."
+  },
+  "login.footer.storage": {
+    "context": "Footer strip of the login card. The no-database claim, stated where someone is deciding whether to hand over Spotify access.",
+    "original": "We don't track any data about you; everything lives in Spotify.",
+    "translation": "We don't track any data about you; everything lives in Spotify."
+  },
+  "login.footer.link": {
+    "context": "Link at the right of the login card footer.",
+    "original": "Learn more",
+    "translation": "Learn more"
+  },
+  "login.scopes.summary": {
+    "context": "Collapsed disclosure toggle below the login card. Expands into the permissions table.",
+    "original": "What access are we asking for?",
+    "translation": "What access are we asking for?"
+  },
+  "login.scope.playlistModify": {
+    "context": "Plain-English reason for the playlist-modify-private scope, in the permissions table.",
+    "original": "Create and reorder the seven board playlists",
+    "translation": "Create and reorder the seven board playlists"
+  },
+  "login.scope.playlistModifyPublic": {
+    "context": "Plain-English reason for the playlist-modify-public scope, in the permissions table. Only exercised when the Private switch on the setup screen is turned off.",
+    "original": "Create them as public playlists, if you turn Private off",
+    "translation": "Create them as public playlists, if you turn Private off"
+  },
+  "login.scope.playlistRead": {
+    "context": "Plain-English reason for the playlist-read-private scope.",
+    "original": "Read what's on the board, import an existing queue",
+    "translation": "Read what's on the board, import an existing queue"
+  },
+  "login.scope.readPlayback": {
+    "context": "Plain-English reason for the user-read-playback-state scope.",
+    "original": "Know what's playing and how far in",
+    "translation": "Know what's playing and how far in"
+  },
+  "login.scope.modifyPlayback": {
+    "context": "Plain-English reason for the user-modify-playback-state scope.",
+    "original": "Start an album from a card",
+    "translation": "Start an album from a card"
+  },
+  "login.scope.recentlyPlayed": {
+    "context": "Plain-English reason for the user-read-recently-played scope. This one is load-bearing — it's how progress is reconstructed at all.",
+    "original": "Credit listens that happened outside the app",
+    "translation": "Credit listens that happened outside the app"
+  },
+  "login.scope.topRead": {
+    "context": "Plain-English reason for the user-top-read scope, which powers screen 03.",
+    "original": "Work out which records you already know a song from",
+    "translation": "Work out which records you already know a song from"
+  },
+  "login.scope.libraryRead": {
+    "context": "Plain-English reason for the user-library-read scope.",
+    "original": "Offer your saved albums when filling the queue",
+    "translation": "Offer your saved albums when filling the queue"
+  },
+  "login.scope.streaming": {
+    "context": "Plain-English reason for the streaming scope.",
+    "original": "Play audio in the browser (Premium)",
+    "translation": "Play audio in the browser (Premium)"
+  },
+  "login.scope.readPrivate": {
+    "context": "Plain-English reason for the user-read-private scope, in the permissions table. Without it Spotify withholds `product`, and Settings names every account Free.",
+    "original": "Tell a Premium account from a Free one",
+    "translation": "Tell a Premium account from a Free one"
+  },
+  "setup.title": {
+    "context": "Page heading, screen 02 — shown once, right after login.",
+    "original": "Set up your board",
+    "translation": "Set up your board"
+  },
+  "setup.playlists.head": {
+    "context": "Heading of the first panel on setup, listing what's about to be created.",
+    "original": "Playlists to create",
+    "translation": "Playlists to create"
+  },
+  "setup.playlists.sub": {
+    "context": "Lighter text after the panel heading. {user} is the Spotify display name.",
+    "original": "— 7 total, in your account {user}",
+    "translation": "— 7 total, in your account {user}"
+  },
+  "setup.private.label": {
+    "context": "Label on the switch controlling whether the created playlists are private. On by default.",
+    "original": "Private",
+    "translation": "Private"
+  },
+  "setup.plays.chip": {
+    "context": "Chip at the right of each row in the setup playlist list, showing what that column means numerically. {n} is 0-5. Needs singular '1 play' at n=1; Abandoned shows an em dash instead.",
+    "original": "{n} plays",
+    "translation": "{n} plays"
+  },
+  "setup.playlists.foot": {
+    "context": "Footer strip of the setup playlist panel. The names are how the app finds the playlists again on each load, since nothing is stored — so renaming one really does orphan that column.",
+    "original": "Don't rename these, otherwise you'll lose your place!",
+    "translation": "Don't rename these, otherwise you'll lose your place!"
+  },
+  "setup.learnMore": {
+    "context": "Link below the playlist panel on Setup, replacing a three-rule panel. Points at the same blog post as the login blurb.",
+    "original": "Learn more about The Album Gauntlet",
+    "translation": "Learn more about The Album Gauntlet"
+  },
+  "setup.cta.primary": {
+    "context": "Primary button at the bottom of setup. Creates the playlists and goes to screen 03.",
+    "original": "Let's go",
+    "translation": "Let's go"
+  },
+  "setup.creating": {
+    "context": "Shown beside the setup button while the seven playlists are being created. A library with hundreds of playlists takes a moment to scan, and a spinner alone says nothing about why.",
+    "original": "Creating the seven playlists in your library…",
+    "translation": "Creating the seven playlists in your library…"
+  },
+  "first.title": {
+    "context": "Page heading, screen 03. The onboarding question, shown once after the playlists are created.",
+    "original": "Let's populate the queue",
+    "translation": "Let's populate the queue"
+  },
+  "first.panel.head": {
+    "context": "Heading of the suggestions panel on screen 03. Names the signal the list is built from.",
+    "original": "From your top songs",
+    "translation": "From your top songs"
+  },
+  "first.range.4weeks": {
+    "context": "Segmented control option on screen 03, top right of the panel. Maps to Spotify's short_term window.",
+    "original": "4 weeks",
+    "translation": "4 weeks"
+  },
+  "first.range.6months": {
+    "context": "Segmented control option on screen 03. Maps to medium_term. Selected by default.",
+    "original": "6 months",
+    "translation": "6 months"
+  },
+  "first.range.allTime": {
+    "context": "Segmented control option on screen 03. Maps to long_term.",
+    "original": "All time",
+    "translation": "All time"
+  },
+  "first.tile.meta": {
+    "context": "Third line on a suggestion tile, screen 03. No runtime: suggestions are grouped out of top tracks, which carry the album but not its track list, so a total would always be 0m.",
+    "original": "{year} · {n} tracks",
+    "translation": "{year} · {n} tracks"
+  },
+  "first.tile.meta.saved": {
+    "context": "Variant of the tile meta line when the album is already in the listener's Spotify library.",
+    "original": "{year} · {n} tracks · {duration} · saved",
+    "translation": "{year} · {n} tracks · {duration} · saved"
+  },
+  "first.why.single": {
+    "context": "Green reason line on a suggestion tile when one track from the album is in the listener's top songs. Preceded by a ♪ glyph. {rank} is its position in the list — Spotify gives a ranking, never a play count, so this must not claim a number of plays.",
+    "original": "{track} · #{rank} in your top songs",
+    "translation": "{track} · #{rank} in your top songs"
+  },
+  "first.why.multi": {
+    "context": "Green reason line when several tracks from the album are in the top songs. {n} is how many. This is the strongest signal and sorts highest.",
+    "original": "{track1}, {track2} · {n} of your top 50",
+    "translation": "{track1}, {track2} · {n} of your top 50"
+  },
+  "first.showMore": {
+    "context": "Ghost button below the suggestion grid on screen 03. {n} is how many more are available.",
+    "original": "Show {n} more",
+    "translation": "Show {n} more"
+  },
+  "first.filterNote": {
+    "context": "Small grey text beside the Show more button, explaining what's been filtered out of the suggestions.",
+    "original": "Singles are left off this list.",
+    "translation": "Singles are left off this list."
+  },
+  "first.bar.count": {
+    "context": "Running count in the sticky bottom bar of screen 03. Updates as tiles are selected. {playlist} is the Queue playlist name.",
+    "original": "{n} records selected · {t} tracks will be added to {playlist}",
+    "translation": "{n} records selected · {t} tracks will be added to {playlist}"
+  },
+  "first.cta.skip": {
+    "context": "Secondary button in the screen 03 action bar. Goes to an empty board.",
+    "original": "Skip — I'll pick my own",
+    "translation": "Skip — I'll pick my own"
+  },
+  "first.cta.primary": {
+    "context": "Primary button in the screen 03 action bar — the last step of onboarding. Adds the selected albums to Queue and opens the board.",
+    "original": "Start listening",
+    "translation": "Start listening"
+  },
+  "playing.toast": {
+    "context": "Dark toast at the bottom of the board when an album advances. The payoff moment. {album}, {n} is the new listen count as an ordinal, {column} the destination.",
+    "original": "{album} finished — {n} listen. Moved to {column}.",
+    "translation": "{album} finished — {n} listen. Moved to {column}."
+  },
+  "playing.toast.undo": {
+    "context": "Green button inside the advance toast. Available for 30 seconds, then gone; lives in the page only, so a reload loses it.",
+    "original": "Undo",
+    "translation": "Undo"
+  },
+  "playing.shuffle.title": {
+    "context": "Tooltip on the shuffle button in the playback bar, which is disabled whenever a board album is playing. Explains why rather than just greying out.",
+    "original": "You can't shuffle here, we're listening to albums cover-to-cover!",
+    "translation": "You can't shuffle here, we're listening to albums cover-to-cover!"
+  },
+  "playing.repeat.title": {
+    "context": "Tooltip on the repeat button in the playback bar. Repeat is allowed and every full pass counts.",
+    "original": "Repeat",
+    "translation": "Repeat"
+  },
+  "playing.prev.aria": {
+    "context": "Screen-reader label, playback bar transport control.",
+    "original": "Previous track",
+    "translation": "Previous track"
+  },
+  "playing.pause.aria": {
+    "context": "Screen-reader label on the main transport button while audio is playing. Becomes 'Play' when paused.",
+    "original": "Pause",
+    "translation": "Pause"
+  },
+  "playing.next.aria": {
+    "context": "Screen-reader label, playback bar transport control. Using it ends the current pass.",
+    "original": "Next track",
+    "translation": "Next track"
+  },
+  "playing.queueButton": {
+    "context": "Button at the right of the playback bar, preceded by a list glyph. Opens the upcoming-tracks queue.",
+    "original": "Queue",
+    "translation": "Queue"
+  },
+  "playing.volume": {
+    "context": "Tiny label before the volume slider in the playback bar. Abbreviated for space.",
+    "original": "Vol",
+    "translation": "Vol"
+  },
+  "playing.error.noDevice": {
+    "context": "Alert under the header when starting a record fails because Spotify has no active device. Spotify's own words for this are 'Player command failed: No active device found', which names nothing the listener can do.",
+    "original": "Nothing to play on — open Spotify on a phone, computer or speaker, then try again.",
+    "translation": "Nothing to play on — open Spotify on a phone, computer or speaker, then try again."
+  },
+  "playing.error.premium": {
+    "context": "Same alert, when Spotify refuses playback because the account is Free. The board still works; 'Open in Spotify' is the way out.",
+    "original": "Playing from here needs Spotify Premium. Use Open in Spotify instead.",
+    "translation": "Playing from here needs Spotify Premium. Use Open in Spotify instead."
+  },
+  "playing.error.offline": {
+    "context": "Same alert, when the request never reached the server at all.",
+    "original": "Could not reach Spotify.",
+    "translation": "Could not reach Spotify."
+  },
+  "playing.error.generic": {
+    "context": "Same alert, when Spotify refused the command without saying why. The fallback: better a vague refusal than a button that does nothing.",
+    "original": "Spotify would not start that record.",
+    "translation": "Spotify would not start that record."
+  },
+  "playing.error.dismiss": {
+    "context": "Button that closes the playback alert. The alert otherwise stays until the next command works, since an error worth reading should not time out.",
+    "original": "Dismiss",
+    "translation": "Dismiss"
+  },
+  "album.meta": {
+    "context": "Meta line under the album title in the album drawer, screen 07. Carries a runtime, unlike first.tile.meta, because the drawer has the album's track list to total.",
+    "original": "{year} · {n} tracks · {duration}",
+    "translation": "{year} · {n} tracks · {duration}"
+  },
+  "album.drawer.kicker": {
+    "context": "Small grey label at the top of the album drawer, screen 06, before the column chip.",
+    "original": "Album",
+    "translation": "Album"
+  },
+  "album.drawer.columnChip": {
+    "context": "Green chip at the top of the album drawer showing which column the album is in. {column} is e.g. ×3.",
+    "original": "in {column}",
+    "translation": "in {column}"
+  },
+  "album.play": {
+    "context": "Primary button in the album drawer, preceded by a play glyph. Starts the record from track 1.",
+    "original": "Play album",
+    "translation": "Play album"
+  },
+  "album.openSpotify": {
+    "context": "Secondary button in the album drawer. Also what replaces the play button for free accounts.",
+    "original": "Open in Spotify",
+    "translation": "Open in Spotify"
+  },
+  "album.listens": {
+    "context": "Bold sentence beside the five dots in the album drawer. {n} is completed listens.",
+    "original": "{n} complete listens.",
+    "translation": "{n} complete listens."
+  },
+  "album.pass.label": {
+    "context": "Left side of the progress row in the album drawer. {n} is which pass this is — pass 4 means three complete listens already banked.",
+    "original": "On listen #{n}",
+    "translation": "On listen #{n}"
+  },
+  "album.pass.count": {
+    "context": "Right side of the album drawer progress row, in monospace.",
+    "original": "{done} / {total} tracks",
+    "translation": "{done} / {total} tracks"
+  },
+  "album.tracks.head": {
+    "context": "Uppercase section heading above the tracklist in the album drawer.",
+    "original": "Tracks",
+    "translation": "Tracks"
+  },
+  "album.sinceLine": {
+    "context": "Single line at the bottom of the album drawer body, above the action buttons. The only history the app can show, since it comes from the playlist add date. {column}, {date}.",
+    "original": "In {column} since {date}.",
+    "translation": "In {column} since {date}."
+  },
+  "album.action.moveTo": {
+    "context": "Button in the album drawer footer, opens a column menu. The keyboard-accessible equivalent of dragging a card.",
+    "original": "Move to ▾",
+    "translation": "Move to ▾"
+  },
+  "album.action.markComplete": {
+    "context": "Button in the album drawer footer. Advances the album one column without playback — for a listen on vinyl, another service, or one the history window lost.",
+    "original": "Advance to next column",
+    "translation": "Advance to next column"
+  },
+  "album.action.abandon": {
+    "context": "Button in the album drawer footer. Moves the album to Abandoned.",
+    "original": "Abandon",
+    "translation": "Abandon"
+  },
+  "album.action.remove": {
+    "context": "Button in the album drawer footer, styled quietest of the four. Takes the album off the board entirely; the album stays in the listener's library.",
+    "original": "Remove from board",
+    "translation": "Remove from board"
+  },
+  "add.modal.title": {
+    "context": "Heading of the add-albums modal, screens 07, 07b and 07c. Names the destination column.",
+    "original": "Add albums to queue",
+    "translation": "Add albums to queue"
+  },
+  "add.modal.aria": {
+    "context": "Screen-reader label on the add-albums dialog itself.",
+    "original": "Add albums to queue",
+    "translation": "Add albums to queue"
+  },
+  "add.tab.search": {
+    "context": "Tab in the add-albums modal, selected by default. Searches all of Spotify.",
+    "original": "Search Spotify",
+    "translation": "Search Spotify"
+  },
+  "add.tab.saved": {
+    "context": "Tab in the add-albums modal. {n} is the count of saved albums in the listener's library.",
+    "original": "Saved albums ({n})",
+    "translation": "Saved albums ({n})"
+  },
+  "add.tab.fromPlaylist": {
+    "context": "Tab in the add-albums modal. Opens the playlist picker on 07b, then the track list on 07c. Groups an existing playlist's tracks back into the albums they came from.",
+    "original": "From a playlist",
+    "translation": "From a playlist"
+  },
+  "add.result.meta": {
+    "context": "Second line of a search result row in the add-albums modal.",
+    "original": "{artist} · {year} · {n} tracks · {duration}",
+    "translation": "{artist} · {year} · {n} tracks · {duration}"
+  },
+  "add.btn.queue": {
+    "context": "Green button on a search result row, adds that album to the Queue.",
+    "original": "+ Queue",
+    "translation": "+ Queue"
+  },
+  "add.btn.added": {
+    "context": "What the add button becomes once an album has been selected in this session.",
+    "original": "✓ Added",
+    "translation": "✓ Added"
+  },
+  "add.chip.onBoard": {
+    "context": "Chip replacing the add button when the album is already somewhere on the board. {column} is where it is. Prevents the same album occupying two columns. On search results (07) and on playlist track rows (07c), where it replaces the tick.",
+    "original": "already on board · {column}",
+    "translation": "already on board · {column}"
+  },
+  "add.pasteNote": {
+    "context": "Small print under the results, covering the case of finding an album elsewhere and pasting it in.",
+    "original": "Paste a Spotify album link to add directly.",
+    "translation": "Paste a Spotify album link to add directly."
+  },
+  "add.foot.count": {
+    "context": "Running count in the add-albums modal footer, on every tab including the playlist track list (07c). Needs a singular form at n=1. {playlist} is the Queue playlist name.",
+    "original": "{n} albums selected · {t} tracks will be appended to {playlist}",
+    "translation": "{n} albums selected · {t} tracks will be appended to {playlist}"
+  },
+  "add.cancel": {
+    "context": "Secondary button in the add-albums modal footer.",
+    "original": "Cancel",
+    "translation": "Cancel"
+  },
+  "add.confirm": {
+    "context": "Primary button in the add-albums modal footer.",
+    "original": "Add to Queue",
+    "translation": "Add to Queue"
+  },
+  "add.foot.empty": {
+    "context": "Add-albums modal footer before anything is selected, in place of add.foot.count. Screen 07b, where there is nothing to select yet.",
+    "original": "No albums selected",
+    "translation": "No albums selected"
+  },
+  "add.playlist.filter": {
+    "context": "Placeholder in the search field on the From a playlist tab, screen 07b. Filters the listener's own playlists by name rather than searching Spotify.",
+    "original": "Filter your playlists",
+    "translation": "Filter your playlists"
+  },
+  "add.playlist.meta": {
+    "context": "Second line of a playlist row, screen 07b. {owner} is the playlist owner, add.playlist.owner.you when it's the listener. Counts tracks, not albums — /me/playlists doesn't report albums and working them out would mean reading every playlist first.",
+    "original": "{owner} · {n} tracks",
+    "translation": "{owner} · {n} tracks"
+  },
+  "add.playlist.owner.you": {
+    "context": "Substituted into {owner} in add.playlist.meta and add.tracks.meta when the listener owns the playlist. Shared playlists read 'You and {n} others'.",
+    "original": "You",
+    "translation": "You"
+  },
+  "add.playlist.owner.shared": {
+    "context": "Substituted into {owner} when the listener owns a collaborative playlist. {n} is the number of other collaborators.",
+    "original": "You and {n} others",
+    "translation": "You and {n} others"
+  },
+  "add.playlist.browse": {
+    "context": "Button on a playlist row, screen 07b. Opens that playlist's tracks on 07c. Not 'Add' — nothing is added until tracks are ticked.",
+    "original": "Browse",
+    "translation": "Browse"
+  },
+  "add.playlist.chip.unavailable": {
+    "context": "Chip on a dimmed playlist row, screen 07b. Spotify's own algorithmic and editorial playlists — Discover Weekly, Release Radar, the Daily Mixes — return 404 from /playlists/{id}/tracks for apps registered after 27 November 2024. Shown rather than hidden, because an unexplained absence reads as a missing feature.",
+    "original": "Spotify's own · can't be read",
+    "translation": "Spotify's own · can't be read"
+  },
+  "add.playlist.boardHidden": {
+    "context": "Small print under the playlist list, screen 07b. The seven board playlists are filtered out; browsing the board back into the board would resolve every track to an album already on it.",
+    "original": "Your seven Gauntlet playlists aren't listed.",
+    "translation": "Your seven Gauntlet playlists aren't listed."
+  },
+  "add.tracks.meta": {
+    "context": "Second line of the header naming the playlist being browsed, screen 07c. {owner} as in add.playlist.meta. The album count is provisional while paging — it counts what has been read, not what the playlist holds.",
+    "original": "{owner} · {n} tracks · {a} albums you could add",
+    "translation": "{owner} · {n} tracks · {a} albums you could add"
+  },
+  "add.tracks.changePlaylist": {
+    "context": "Button in the playlist header, screen 07c. Returns to the playlist picker on 07b.",
+    "original": "Change playlist",
+    "translation": "Change playlist"
+  },
+  "add.tracks.hint": {
+    "context": "One line above the track list, screen 07c. States the thing the screen has to make legible: the tick is on a track but the unit of selection is the album, and what gets written is the album's own tracklist rather than the playlist's copy of it.",
+    "original": "Ticking a track adds the album it came from — every track, in album order.",
+    "translation": "Ticking a track adds the album it came from — every track, in album order."
+  },
+  "add.tracks.selectAll": {
+    "context": "Select-all checkbox above the track list, screen 07c. {n} counts addable albums, so it excludes rows that are already on the board or can't resolve to an album. The whole-playlist case.",
+    "original": "Select all {n} albums",
+    "translation": "Select all {n} albums"
+  },
+  "add.tracks.clear": {
+    "context": "Button beside the select-all checkbox, screen 07c. Deselects everything.",
+    "original": "Clear",
+    "translation": "Clear"
+  },
+  "add.tracks.sub": {
+    "context": "Second line of a track row, screen 07c. {album} is emphasised because it, not the track, is what gets added.",
+    "original": "{artist} · from {album}",
+    "translation": "{artist} · from {album}"
+  },
+  "add.tracks.count": {
+    "context": "Right-hand side of an unticked track row, screen 07c. The album's own track count — what ticking the row would add.",
+    "original": "{n} tracks",
+    "translation": "{n} tracks"
+  },
+  "add.tracks.willAdd": {
+    "context": "Replaces add.tracks.count once a row is ticked, screen 07c. The plus marks the tracks as being added rather than merely counted.",
+    "original": "+{n} tracks",
+    "translation": "+{n} tracks"
+  },
+  "add.tracks.chip.sameAlbum": {
+    "context": "Chip on a track row whose album another ticked row already selected, screen 07c. The row is ticked but not by itself, so it reads as a consequence rather than a second choice.",
+    "original": "same album",
+    "translation": "same album"
+  },
+  "add.tracks.chip.single": {
+    "context": "Chip on a dimmed track row, screen 07c. album_type: single, which takes most EPs with it — Spotify types them that way. Unresolvable rows keep their place and say why, because a playlist is a list the listener can already see in Spotify.",
+    "original": "single",
+    "translation": "single"
+  },
+  "add.tracks.chip.compilation": {
+    "context": "Chip on a dimmed track row, screen 07c. album_type: compilation, dropped for the reason First records drops it — five passes through a best-of isn't the exercise.",
+    "original": "compilation",
+    "translation": "compilation"
+  },
+  "add.tracks.chip.localFile": {
+    "context": "Chip on a dimmed track row, screen 07c. is_local with a null id, so there's no album to look up.",
+    "original": "local file",
+    "translation": "local file"
+  },
+  "add.tracks.chip.episode": {
+    "context": "Chip on a dimmed track row, screen 07c. Playlists can hold podcast episodes; they aren't music and have no album.",
+    "original": "episode",
+    "translation": "episode"
+  },
+  "add.tracks.localSub": {
+    "context": "Replaces add.tracks.sub on a local-file row, screen 07c, which has no artist or album to name.",
+    "original": "Added by you · not on Spotify",
+    "translation": "Added by you · not on Spotify"
+  },
+  "narrow.band.inProgress.note": {
+    "context": "Lighter text after the In progress band label on the narrow board, screen 08, where four columns are merged into one.",
+    "original": "— ×1 through ×4",
+    "translation": "— ×1 through ×4"
+  },
+  "narrow.column.inProgress.name": {
+    "context": "Heading of the merged middle column on the narrow board.",
+    "original": "In progress",
+    "translation": "In progress"
+  },
+  "narrow.column.inProgress.sub": {
+    "context": "Sub-line under the merged column heading. States the sort rule explicitly, since merging four columns costs the spatial ordering.",
+    "original": "Sorted by listens",
+    "translation": "Sorted by listens"
+  },
+  "narrow.card.toDone.withPass": {
+    "context": "Longer variant used when a pass is underway. {p} is which pass, {done}/{total} its progress.",
+    "original": "Listen #{p} · {done}/{total}",
+    "translation": "Listen #{p} · {done}/{total}"
+  },
+  "narrow.card.playing": {
+    "context": "Progress label on the narrow-board card currently playing.",
+    "original": "playing · track {n} of {total}",
+    "translation": "playing · track {n} of {total}"
+  },
+  "narrow.abandoned.summary": {
+    "context": "Collapsed disclosure at the bottom of the Done column on the narrow board, where Abandoned has no column of its own. {n} is the count.",
+    "original": "Abandoned ({n})",
+    "translation": "Abandoned ({n})"
+  },
+  "settings.title": {
+    "context": "Page heading, screen 09.",
+    "original": "Settings",
+    "translation": "Settings"
+  },
+  "settings.account.head": {
+    "context": "Heading of the first panel on Settings.",
+    "original": "Spotify account",
+    "translation": "Spotify account"
+  },
+  "settings.account.meta": {
+    "context": "Grey line under the account name on Settings. {tier} is Premium or Free, {time} is how long ago the board last read from Spotify.",
+    "original": "{tier} · last sync {time}",
+    "translation": "{tier} · last sync {time}"
+  },
+  "settings.reconnect": {
+    "context": "Button on the account row, for re-running the OAuth handshake if the session has gone stale.",
+    "original": "Reconnect",
+    "translation": "Reconnect"
+  },
+  "settings.playlists.head": {
+    "context": "Section heading above the list of seven playlists on Settings.",
+    "original": "Playlists",
+    "translation": "Playlists"
+  },
+  "settings.playlist.counts": {
+    "context": "Chip on each playlist row on Settings. {a} albums, {t} tracks.",
+    "original": "{a} albums · {t} tracks",
+    "translation": "{a} albums · {t} tracks"
+  },
+  "settings.playlist.empty": {
+    "context": "What the playlist count chip shows when a column has nothing in it.",
+    "original": "empty",
+    "translation": "empty"
+  },
+  "settings.playlist.open": {
+    "context": "Link at the right of each playlist row on Settings. Opens that playlist in Spotify.",
+    "original": "Open",
+    "translation": "Open"
+  },
+  "settings.rescan": {
+    "context": "Button in the playlist panel footer on Settings. Re-reads the seven playlists, picking up edits made in the Spotify app.",
+    "original": "Re-scan playlists",
+    "translation": "Re-scan playlists"
+  },
+  "settings.disconnect.head": {
+    "context": "Section heading for the last panel on Settings.",
+    "original": "Disconnect",
+    "translation": "Disconnect"
+  },
+  "settings.disconnect.label": {
+    "context": "Row label on the disconnect action.",
+    "original": "Disconnect Spotify",
+    "translation": "Disconnect Spotify"
+  },
+  "settings.disconnect.button": {
+    "context": "Button on the disconnect row.",
+    "original": "Disconnect",
+    "translation": "Disconnect"
+  },
+  "settings.deletePlaylists.label": {
+    "context": "Row label on the destructive delete action, the last thing on Settings.",
+    "original": "Delete board playlists",
+    "translation": "Delete board playlists"
+  },
+  "settings.deletePlaylists.button": {
+    "context": "Button on the delete row.",
+    "original": "Delete playlists",
+    "translation": "Delete playlists"
+  },
+  "settings.backLink": {
+    "context": "Link at the very bottom of the Settings page.",
+    "original": "← Back to board",
+    "translation": "← Back to board"
+  },
+  "login.githubLink": {
+    "context": "Link on the login screen where the invitation-only / open-source paragraph used to be. The five-listener cap is no longer explained in the UI; the repo covers it.",
+    "original": "Open source on GitHub",
+    "translation": "Open source on GitHub"
+  },
+  "board.loading": {
+    "context": "Shown under the spinner while the board is being read. Everything is derived from Spotify at read time, so a large library is a real wait; saying what is happening beats an unexplained spinner.",
+    "original": "Reading your playlists from Spotify…",
+    "translation": "Reading your playlists from Spotify…"
+  }
+}
