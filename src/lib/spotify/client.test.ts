@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { chunked, PAGE_CONCURRENCY, SpotifyClient, SPOTIFY_API } from './client';
+import { chunked, PAGE_CONCURRENCY, SEARCH_LIMIT, SpotifyClient, SPOTIFY_API } from './client';
 import {
   SpotifyAuthError,
   SpotifyError,
@@ -407,6 +407,21 @@ describe('catalogue', () => {
   it('copes with a search that matched nothing', async () => {
     const { client } = clientWith([{ body: {} }]);
     await expect(client.searchAlbums('zzz')).resolves.toEqual([]);
+  });
+
+  // Search is the one paged endpoint that doesn't take fifty. Twenty — the
+  // number this asked for until August 2026 — is refused as 400 "Invalid
+  // limit", which fails the whole search rather than shortening it, so the
+  // ceiling is asserted here and not just kept in a constant.
+  it('never asks search for more results than Spotify allows', async () => {
+    expect(SEARCH_LIMIT).toBeLessThanOrEqual(10);
+    const { client, calls } = clientWith([{ body: { albums: { items: [] } } }, { body: { albums: { items: [] } } }]);
+
+    await client.searchAlbums('yard act');
+    expect(calls[0]?.url).toContain(`limit=${SEARCH_LIMIT}`);
+
+    await client.searchAlbums('yard act', 20);
+    expect(calls[1]?.url).toContain(`limit=${SEARCH_LIMIT}`);
   });
 
   // The batch endpoint was removed in February 2026, so this is one request per

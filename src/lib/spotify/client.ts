@@ -48,6 +48,15 @@ export const ALBUM_FETCH_CONCURRENCY = 20;
 /** The window `recently-played` gives us. Four long records and the oldest pass is gone. */
 export const HISTORY_LIMIT = 50;
 
+/**
+ * The most `/search` will answer with. Its documented range is `0 - 10`, well
+ * down from the fifty the rest of the paged endpoints still take, and outside
+ * it the endpoint refuses the whole request as 400 "Invalid limit" rather than
+ * clamping — so one stale number here doesn't shorten a search, it takes every
+ * search out. Zero is refused too, documented range or not.
+ */
+export const SEARCH_LIMIT = 10;
+
 /** Pages requested at once when reading a paged endpoint to the end. */
 export const PAGE_CONCURRENCY = 5;
 
@@ -294,9 +303,10 @@ export class SpotifyClient {
 
   // ---- library and search ------------------------------------------------
 
-  async searchAlbums(query: string, limit = 20): Promise<SpotifyAlbum[]> {
+  /** Asking for more than Spotify allows is a refusal, so a caller gets what it allows. */
+  async searchAlbums(query: string, limit = SEARCH_LIMIT): Promise<SpotifyAlbum[]> {
     const response = await this.request<SearchResponse>('/search', {
-      query: { q: query, type: 'album', limit },
+      query: { q: query, type: 'album', limit: Math.min(limit, SEARCH_LIMIT) },
     });
     return response.albums?.items ?? [];
   }
