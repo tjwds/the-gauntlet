@@ -24,6 +24,32 @@ function stubApi(boards: unknown[], { writeFails = false } = {}) {
   return { impl: impl as unknown as typeof fetch, writes, readCount: () => reads };
 }
 
+/**
+ * The same thing, with the writes held open. A move is only worth showing on a
+ * card while it is still in flight, so the test has to be able to stand in it.
+ */
+function heldApi(board = aBoard(), { writeFails = false } = {}) {
+  const writes: Array<{ url: string; body: unknown }> = [];
+  let release = () => {};
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+
+  const impl = vi.fn(async (input: RequestInfo | URL, init: RequestInit = {}) => {
+    const url = String(input);
+    if (url === '/api/board' && !init.method) {
+      return new Response(JSON.stringify({ setupRequired: false, board }), { status: 200 });
+    }
+    writes.push({ url, body: JSON.parse(String(init.body)) });
+    await held;
+    return writeFails
+      ? new Response(JSON.stringify({ error: 'Spotify said no' }), { status: 409 })
+      : new Response(JSON.stringify({ ok: true }), { status: 200 });
+  });
+
+  return { impl: impl as unknown as typeof fetch, writes, release: () => release() };
+}
+
 const ready = (board = aBoard()) => ({ setupRequired: false, board });
 
 describe('useBoard', () => {
@@ -293,6 +319,78 @@ describe('useBoard', () => {
         await result.current.move(album, 'x1');
       });
       expect(writes).toHaveLength(0);
+    });
+
+    describe('while the move is being written', () => {
+      const album = aCard({ id: 'a1', columnId: 'x1' });
+
+      /** Starts a move and stops in the middle of it, where the card has to say so. */
+      async function midMove(options: { writeFails?: boolean } = {}) {
+        const held = heldApi(aBoard({ x1: [album] }), options);
+        const { result } = renderHook(() => useBoard({ fetchImpl: held.impl }));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        let move!: Promise<void>;
+        act(() => {
+          move = result.current.move(album, 'x3');
+        });
+        await waitFor(() => expect(result.current.movingTo.get('a1')).toBe('x3'));
+
+        return {
+          ...held,
+          result,
+          finish: () =>
+            act(async () => {
+              held.release();
+              await move;
+            }),
+        };
+      }
+
+      it('says where the record is going until the board has been read back', async () => {
+        const { result, finish } = await midMove();
+        await finish();
+        expect(result.current.movingTo.has('a1')).toBe(false);
+      });
+
+      it('stops saying it when Spotify refuses the move', async () => {
+        const { result, finish } = await midMove({ writeFails: true });
+        await finish();
+        expect(result.current.movingTo.has('a1')).toBe(false);
+        expect(result.current.error).toBe('Spotify said no');
+      });
+
+      it('ignores a second move of a record already on its way', async () => {
+        // The card is still drawn in the column it is leaving, so a second move
+        // would name that column as the one to take the record out of.
+        const { result, writes, finish } = await midMove();
+
+        await act(async () => {
+          await result.current.move(album, 'x4');
+        });
+        expect(writes).toHaveLength(1);
+        expect(result.current.movingTo.get('a1')).toBe('x3');
+
+        await finish();
+      });
+
+      it('says so for an undo as well, which the toast no longer can', async () => {
+        const held = heldApi(aBoard({ x2: [aCard({ id: 'a1', columnId: 'x2' })] }));
+        const { result } = renderHook(() => useBoard({ fetchImpl: held.impl }));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        let undo!: Promise<void>;
+        act(() => {
+          undo = result.current.undo({ album, from: 'x1', to: 'x2', listen: 2 });
+        });
+        await waitFor(() => expect(result.current.movingTo.get('a1')).toBe('x1'));
+
+        await act(async () => {
+          held.release();
+          await undo;
+        });
+        expect(result.current.movingTo.has('a1')).toBe(false);
+      });
     });
 
     it('takes a record off the board', async () => {

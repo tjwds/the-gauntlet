@@ -129,6 +129,11 @@
     "original": "moved just now",
     "translation": "moved just now"
   },
+  "card.movingChip": {
+    "context": "Chip on a card while a move the listener asked for is being written — dragged into another column, sent there from the card menu or the album drawer, or an advance being undone. {column} is where it is going. Sits where card.movedChip sits, and a spinner sits over the album art beside it. Screens 04, 05, 08.",
+    "original": "moving to {column}…",
+    "translation": "moving to {column}…"
+  },
   "login.cta": {
     "context": "The primary button on the login screen. Full width, green.",
     "original": "Log in with Spotify",

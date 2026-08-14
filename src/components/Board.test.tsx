@@ -58,6 +58,16 @@ describe('the wide board', () => {
     expect(props.onMove).toHaveBeenCalledWith(expect.objectContaining({ id: 'a1' }), 'x3');
   });
 
+  it('shows a card that has been dropped somewhere on its way there', () => {
+    const board = aBoard({ x1: [aCard({ id: 'a1' })] });
+    render(<Board board={board} movingTo={new Map([['a1', 'x3' as const]])} {...handlers()} />);
+    // Still drawn in the column it is leaving, because that is where Spotify
+    // still has it — with a spinner rather than nothing to show for the drop.
+    const card = within(screen.getByTestId('column-x1')).getByTestId('board-card');
+    expect(within(card).getByTestId('moving-spinner')).toBeInTheDocument();
+    expect(within(card).getByText('moving to ×3…')).toBeInTheDocument();
+  });
+
   it('does nothing when a drag ends outside a column', () => {
     const props = handlers();
     render(<Board board={aBoard({ x1: [aCard({ id: 'a1' })] })} {...props} />);
@@ -128,6 +138,15 @@ describe('the narrow board', () => {
       within(screen.getByTestId('column-queue')).getByRole('button', { name: '+ Add albums' }),
     );
     expect(props.onAddAlbums).toHaveBeenCalled();
+  });
+
+  it('shows a card on its way in the merged column too', () => {
+    render(
+      <Board board={board} narrow movingTo={new Map([['a1', 'done' as const]])} {...handlers()} />,
+    );
+    const merged = within(screen.getByTestId('column-x1'));
+    expect(merged.getByText('moving to Done…')).toBeInTheDocument();
+    expect(merged.getByTestId('moving-spinner')).toBeInTheDocument();
   });
 
   it('files a dragged card into the merged column', () => {

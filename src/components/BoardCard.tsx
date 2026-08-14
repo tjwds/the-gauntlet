@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, buttonVariants, Chip, cn, Dropdown } from '@heroui/react';
+import { Button, buttonVariants, Chip, cn, Dropdown, Spinner } from '@heroui/react';
 import { AlbumArt } from './AlbumArt';
 import { ProgressDots } from './ProgressDots';
 import { PassProgress } from './PassProgress';
@@ -21,6 +21,11 @@ export interface BoardCardProps extends BoardCardActions {
   playing?: boolean;
   nowPlaying?: NowPlaying | null;
   justMoved?: boolean;
+  /**
+   * Where a move the listener asked for is taking this card, while it is still
+   * being written. Null once the board has been read back.
+   */
+  movingTo?: ColumnId | null;
   /** The narrow board merges four columns, so the count moves onto a chip. */
   narrow?: boolean;
   onDragStart?(album: BoardCardModel): void;
@@ -32,6 +37,7 @@ export function BoardCard({
   playing = false,
   nowPlaying = null,
   justMoved = false,
+  movingTo = null,
   narrow = false,
   onOpen,
   onPlay,
@@ -44,12 +50,18 @@ export function BoardCard({
   const narrowLabel = narrow ? narrowProgressLabel(album, playing, nowPlaying) : undefined;
   // Null only in Abandoned, where the count never meant anything.
   const listens = album.listens ?? 0;
+  // A move is two playlist writes and a board read behind it, so the card sits
+  // in the column it is leaving for a second or two after the listener asked
+  // for the move. Until it lands it says where it is going.
+  const destination = movingTo === null ? null : getColumn(movingTo);
 
   return (
     <article
       data-testid="board-card"
       data-album-id={album.id}
-      draggable={onDragStart !== undefined}
+      aria-busy={destination !== null}
+      // A card already on its way is not one to pick up and drop somewhere else.
+      draggable={onDragStart !== undefined && destination === null}
       onDragStart={() => onDragStart?.(album)}
       onDragEnd={() => onDragEnd?.()}
       className={cn(
@@ -61,7 +73,12 @@ export function BoardCard({
     >
       <div className="relative size-13 shrink-0">
         <AlbumArt src={album.imageUrl} className="size-13 rounded-lg" />
-        {!playing && (
+        {destination !== null && (
+          <div className="absolute inset-0 grid place-items-center rounded-lg bg-surface/75">
+            <Spinner size="sm" data-testid="moving-spinner" aria-hidden="true" />
+          </div>
+        )}
+        {!playing && destination === null && (
           <Button
             aria-label={t('card.play.aria')}
             onPress={() => onPlay(album)}
@@ -110,7 +127,15 @@ export function BoardCard({
 
         {album.inFlight && !narrow && <PassProgress pass={album.inFlight} />}
 
-        {justMoved && (
+        {destination !== null && (
+          <div className="mt-1.5">
+            <Chip color="accent" variant="soft" size="sm">
+              {t('card.movingChip', { column: destination.name })}
+            </Chip>
+          </div>
+        )}
+
+        {justMoved && destination === null && (
           <div className="mt-1.5">
             <Chip color="accent" variant="primary" size="sm">
               {t('card.movedChip')}

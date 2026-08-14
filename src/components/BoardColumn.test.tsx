@@ -73,6 +73,18 @@ describe('BoardColumn', () => {
     expect(screen.getByText('moved just now')).toBeInTheDocument();
   });
 
+  it('marks the card on its way out, and only that one', () => {
+    render(
+      <BoardColumn
+        column={column('x2', [aCard(), aCard({ id: 'alb2', name: 'Sunbather' })])}
+        movingTo={new Map([['alb2', 'done' as const]])}
+        {...handlers()}
+      />,
+    );
+    expect(screen.getByText('moving to Done…')).toBeInTheDocument();
+    expect(screen.getAllByTestId('board-card')[0]).toHaveAttribute('aria-busy', 'false');
+  });
+
   describe('as a drop target', () => {
     it('offers a slot for a card dragged in from elsewhere', () => {
       render(

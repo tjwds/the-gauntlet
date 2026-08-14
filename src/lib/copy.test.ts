@@ -26,7 +26,7 @@ describe('t', () => {
 
   it('holds every string in the product, and only those', () => {
     const keys = copyKeys();
-    expect(keys).toHaveLength(151);
+    expect(keys).toHaveLength(152);
     expect(keys).not.toContain('_readme');
   });
 

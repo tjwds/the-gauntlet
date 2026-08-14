@@ -16,6 +16,7 @@ export interface BoardProps extends Handlers {
   playingAlbumId?: string | null;
   nowPlaying?: BoardColumnProps['nowPlaying'];
   justMovedIds?: ReadonlySet<string>;
+  movingTo?: ReadonlyMap<string, ColumnId>;
   onAddAlbums(): void;
 }
 
@@ -38,7 +39,7 @@ function useDragging(onMove: Handlers['onMove']) {
   };
 }
 
-function WideBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlaying, ...handlers }: Omit<BoardProps, 'narrow'>) {
+function WideBoard({ board, onAddAlbums, justMovedIds, movingTo, playingAlbumId, nowPlaying, ...handlers }: Omit<BoardProps, 'narrow'>) {
   const drag = useDragging(handlers.onMove);
 
   return (
@@ -55,6 +56,7 @@ function WideBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlayin
             playingAlbumId={playingAlbumId ?? null}
             nowPlaying={nowPlaying ?? null}
             {...(justMovedIds ? { justMovedIds } : {})}
+            {...(movingTo ? { movingTo } : {})}
             {...(column.id === 'queue'
               ? {
                   footer: (
@@ -83,7 +85,7 @@ function WideBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlayin
  * ×N columns merge, which costs the spatial ordering — so In progress states
  * its sort, since a sort the user can't see is a sort they won't trust.
  */
-function NarrowBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlaying, ...handlers }: Omit<BoardProps, 'narrow'>) {
+function NarrowBoard({ board, onAddAlbums, justMovedIds, movingTo, playingAlbumId, nowPlaying, ...handlers }: Omit<BoardProps, 'narrow'>) {
   const drag = useDragging(handlers.onMove);
   const byId = (id: ColumnId) => board.columns.find((column) => column.id === id);
 
@@ -122,6 +124,7 @@ function NarrowBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlay
           playingAlbumId={playingAlbumId ?? null}
           nowPlaying={nowPlaying ?? null}
           {...(justMovedIds ? { justMovedIds } : {})}
+          {...(movingTo ? { movingTo } : {})}
           emptyLabel={t('column.empty.short')}
           footer={
             <button
@@ -144,6 +147,7 @@ function NarrowBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlay
           playingAlbumId={playingAlbumId ?? null}
           nowPlaying={nowPlaying ?? null}
           {...(justMovedIds ? { justMovedIds } : {})}
+          {...(movingTo ? { movingTo } : {})}
           emptyLabel={t('column.x4.empty')}
           {...drag}
           {...handlers}
@@ -155,6 +159,7 @@ function NarrowBoard({ board, onAddAlbums, justMovedIds, playingAlbumId, nowPlay
           playingAlbumId={playingAlbumId ?? null}
           nowPlaying={nowPlaying ?? null}
           {...(justMovedIds ? { justMovedIds } : {})}
+          {...(movingTo ? { movingTo } : {})}
           emptyLabel={t('column.empty.short')}
           footer={
             abandoned.albums.length > 0 ? (

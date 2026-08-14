@@ -75,6 +75,41 @@ describe('BoardCard', () => {
     expect(screen.getByText('moved just now')).toBeInTheDocument();
   });
 
+  describe('while a move it was asked to make is being written', () => {
+    it('spins over the art and names where the record is going', () => {
+      setup(aCard({ columnId: 'x1' }), { movingTo: 'x3' });
+      expect(screen.getByTestId('moving-spinner')).toBeInTheDocument();
+      expect(screen.getByText('moving to ×3…')).toBeInTheDocument();
+    });
+
+    it('marks the card busy', () => {
+      setup(aCard({ columnId: 'x1' }), { movingTo: 'done' });
+      expect(screen.getByTestId('board-card')).toHaveAttribute('aria-busy', 'true');
+    });
+
+    it('says nothing of the sort when the record is where it belongs', () => {
+      setup();
+      expect(screen.queryByTestId('moving-spinner')).not.toBeInTheDocument();
+      expect(screen.getByTestId('board-card')).toHaveAttribute('aria-busy', 'false');
+    });
+
+    it('takes the play button off the art the spinner is over', () => {
+      setup(aCard(), { movingTo: 'x4' });
+      expect(screen.queryByRole('button', { name: 'Play album' })).not.toBeInTheDocument();
+    });
+
+    it('is not a card to pick up and drop somewhere else', () => {
+      setup(aCard(), { movingTo: 'x4', onDragStart: vi.fn() });
+      expect(screen.getByTestId('board-card')).toHaveAttribute('draggable', 'false');
+    });
+
+    it('replaces the chip of the move before it, which is no longer the news', () => {
+      setup(aCard(), { justMoved: true, movingTo: 'abandoned' });
+      expect(screen.getByText('moving to Abandoned…')).toBeInTheDocument();
+      expect(screen.queryByText('moved just now')).not.toBeInTheDocument();
+    });
+  });
+
   it('puts the column on a chip on the narrow board, where position cannot say it', () => {
     setup(aCard({ columnId: 'x3', listens: 3 }), { narrow: true });
     expect(screen.getByText('×3')).toBeInTheDocument();

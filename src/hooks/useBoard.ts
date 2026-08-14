@@ -43,6 +43,12 @@ export interface UseBoardResult {
   addAlbums(albumIds: string[]): Promise<string | null>;
   undo(advance: Advance): Promise<void>;
   justMovedIds: ReadonlySet<string>;
+  /**
+   * Records with a move of their own in flight, against the column each is on
+   * its way to. A move is two playlist writes and then a whole board read, so
+   * the card has to say it is going somewhere or it just sits there.
+   */
+  movingTo: ReadonlyMap<string, ColumnId>;
 }
 
 export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): UseBoardResult {
@@ -51,6 +57,7 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
   const [error, setError] = useState<string | null>(null);
   const [advance, setAdvance] = useState<Advance | null>(null);
   const [justMovedIds, setJustMovedIds] = useState<ReadonlySet<string>>(new Set());
+  const [movingTo, setMovingTo] = useState<ReadonlyMap<string, ColumnId>>(new Map());
 
   const doFetch = fetchImpl ?? globalThis.fetch;
   // Held in a ref so a new callback identity doesn't re-run the board read.
@@ -68,6 +75,16 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
   // same pass still to its name. Remembering what was filed is what makes a
   // read that lands in that window harmless.
   const filed = useRef(new Set<string>());
+  // The same thing `movingTo` renders, readable without waiting for a render:
+  // whether a record is already on its way decides whether a second move of it
+  // is allowed to start, and that has to be answered the moment it is asked.
+  const moving = useRef(new Map<string, ColumnId>());
+
+  const setMoving = useCallback((albumId: string, to: ColumnId | null) => {
+    if (to === null) moving.current.delete(albumId);
+    else moving.current.set(albumId, to);
+    setMovingTo(new Map(moving.current));
+  }, []);
 
   const write = useCallback(
     async (path: string, method: string, body: unknown) => {
@@ -164,6 +181,11 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
   const move = useCallback(
     async (album: BoardCard, to: ColumnId) => {
       if (album.columnId === to) return;
+      // The card still sits in the column it is leaving until the board has been
+      // read again, so a second move would name that column as the one to take
+      // the record out of — and it is no longer there to take out.
+      if (moving.current.has(album.id)) return;
+      setMoving(album.id, to);
       try {
         // A manual move sets the play count to that column's value, which is
         // what dropping a card into a column means.
@@ -174,9 +196,11 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
         await load({ autoAdvance: false });
       } catch (failure) {
         setError((failure as Error).message);
+      } finally {
+        setMoving(album.id, null);
       }
     },
-    [write, load],
+    [write, load, setMoving],
   );
 
   const remove = useCallback(
@@ -209,6 +233,9 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
   const undo = useCallback(
     async (target: Advance) => {
       setAdvance(null);
+      // The toast goes the moment it is pressed, so the card in the column the
+      // record is being taken back out of is the only thing left to say so.
+      setMoving(target.album.id, target.from);
       try {
         await write('/api/board/move', 'POST', {
           albumId: target.album.id,
@@ -226,9 +253,11 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
         await load({ autoAdvance: false });
       } catch (failure) {
         setError((failure as Error).message);
+      } finally {
+        setMoving(target.album.id, null);
       }
     },
-    [write, load],
+    [write, load, setMoving],
   );
 
   return {
@@ -237,6 +266,7 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
     error,
     advance,
     justMovedIds,
+    movingTo,
     refresh,
     move,
     remove,

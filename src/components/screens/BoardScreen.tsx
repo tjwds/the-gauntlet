@@ -116,6 +116,7 @@ export function BoardScreen({ user = null, canPlayInApp = true, fetchImpl }: Boa
             playingAlbumId={playingAlbumId}
             nowPlaying={nowPlaying}
             justMovedIds={board.justMovedIds}
+            movingTo={board.movingTo}
             onOpen={(album) => setOpenAlbumId(album.id)}
             onPlay={play}
             onMove={(album, to) => void board.move(album, to)}

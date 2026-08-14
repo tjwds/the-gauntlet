@@ -18,6 +18,8 @@ export interface BoardColumnProps extends CardHandlers {
   playingAlbumId?: string | null;
   nowPlaying?: BoardCardProps['nowPlaying'];
   justMovedIds?: ReadonlySet<string>;
+  /** Cards with a move in flight, against the column each is on its way to. */
+  movingTo?: ReadonlyMap<string, ColumnId>;
   emptyLabel?: string;
   footer?: React.ReactNode;
   draggingAlbum?: BoardCardModel | null;
@@ -34,6 +36,7 @@ export function BoardColumn({
   playingAlbumId = null,
   nowPlaying = null,
   justMovedIds,
+  movingTo,
   emptyLabel,
   footer,
   draggingAlbum = null,
@@ -96,6 +99,7 @@ export function BoardColumn({
             playing={playingAlbumId === album.id}
             nowPlaying={playingAlbumId === album.id ? nowPlaying : null}
             justMoved={justMovedIds?.has(album.id) ?? false}
+            movingTo={movingTo?.get(album.id) ?? null}
             {...(onDragStart ? { onDragStart } : {})}
             {...(onDragEnd ? { onDragEnd } : {})}
             {...handlers}

@@ -429,6 +429,39 @@ describe('BoardScreen, the rest of the wiring', () => {
     );
   });
 
+  it('shows a dragged card as moving until Spotify has been told', async () => {
+    // The card stays in the column it is leaving until the board has been read
+    // again — several seconds against a real library — so it says where it is
+    // going rather than looking like a drop that did nothing.
+    let release = () => {};
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const { impl: base } = stubApi();
+    const impl = vi.fn(async (input: RequestInfo | URL, init: RequestInit = {}) => {
+      if (init.method) await held;
+      return (base as unknown as typeof fetch)(input, init);
+    }) as unknown as typeof fetch;
+
+    render(<BoardScreen fetchImpl={impl} />);
+    await waitFor(() => expect(screen.getByText('In Rainbows')).toBeInTheDocument());
+
+    fireEvent.dragStart(within(screen.getByTestId('column-x3')).getByTestId('board-card'));
+    const target = screen.getByTestId('column-x4');
+    fireEvent.dragOver(target);
+    fireEvent.drop(target);
+
+    const card = within(screen.getByTestId('column-x3')).getByTestId('board-card');
+    await waitFor(() => expect(within(card).getByText('moving to ×4…')).toBeInTheDocument());
+    expect(within(card).getByTestId('moving-spinner')).toBeInTheDocument();
+    expect(card).toHaveAttribute('aria-busy', 'true');
+
+    await act(async () => {
+      release();
+    });
+    await waitFor(() => expect(screen.queryByText('moving to ×4…')).not.toBeInTheDocument());
+  });
+
   it('takes a card off the board from its menu', async () => {
     const { impl, writes } = stubApi();
     render(<BoardScreen fetchImpl={impl} />);
