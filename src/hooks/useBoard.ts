@@ -35,7 +35,12 @@ export interface UseBoardResult {
   refresh(): Promise<void>;
   move(album: BoardCard, to: ColumnId): Promise<void>;
   remove(album: BoardCard): Promise<void>;
-  addAlbums(albumIds: string[]): Promise<void>;
+  /**
+   * Resolves to what Spotify refused with, or null when the records went in.
+   * The add-albums modal writes a record per press and sits over the board's
+   * own error line, so it has to be told rather than shown.
+   */
+  addAlbums(albumIds: string[]): Promise<string | null>;
   undo(advance: Advance): Promise<void>;
   justMovedIds: ReadonlySet<string>;
 }
@@ -187,12 +192,15 @@ export function useBoard({ fetchImpl, onSetupRequired }: UseBoardOptions = {}): 
   );
 
   const addAlbums = useCallback(
-    async (albumIds: string[]) => {
+    async (albumIds: string[]): Promise<string | null> => {
       try {
         await write('/api/board/albums', 'POST', { albumIds, to: 'queue' });
         await load({ autoAdvance: false });
+        return null;
       } catch (failure) {
-        setError((failure as Error).message);
+        const message = (failure as Error).message;
+        setError(message);
+        return message;
       }
     },
     [write, load],

@@ -462,7 +462,7 @@ describe('BoardScreen, the rest of the wiring', () => {
     );
   });
 
-  it('adds albums picked in the modal', async () => {
+  it('adds an album straight from the modal, on the one press', async () => {
     const { impl, writes } = stubApi({
       '/api/catalogue': {
         albums: [
@@ -488,7 +488,6 @@ describe('BoardScreen, the rest of the wiring', () => {
     await userEvent.click(headerButton!);
     await userEvent.type(await screen.findByRole('textbox', { name: 'Add albums to queue' }), 'w');
     await userEvent.click(await screen.findByRole('button', { name: '+ Queue' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Add to Queue' }));
 
     await waitFor(() =>
       expect(writes).toContainEqual({

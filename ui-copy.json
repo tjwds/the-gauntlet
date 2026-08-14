@@ -490,12 +490,12 @@
     "translation": "{artist} · {year} · {n} tracks · {duration}"
   },
   "add.btn.queue": {
-    "context": "Green button on a search result row, adds that album to the Queue.",
+    "context": "Green button on a result row, screen 07, on both the Search Spotify and Saved albums tabs. Puts that album in the Queue on the press — there is no second step to confirm it.",
     "original": "+ Queue",
     "translation": "+ Queue"
   },
-  "add.btn.added": {
-    "context": "What the add button becomes once an album has been selected in this session.",
+  "add.chip.added": {
+    "context": "Chip replacing the add button on a result row, screen 07, once that album has been added. It is in the Queue already, so there is nothing left to press.",
     "original": "✓ Added",
     "translation": "✓ Added"
   },
@@ -510,19 +510,29 @@
     "translation": "Paste a Spotify album link to add directly."
   },
   "add.foot.count": {
-    "context": "Running count in the add-albums modal footer, on every tab including the playlist track list (07c). Needs a singular form at n=1. {playlist} is the Queue playlist name.",
+    "context": "Running count in the add-albums modal footer on the playlist track list, screen 07c — the one tab that picks a batch before writing it. Needs a singular form at n=1. {playlist} is the Queue playlist name.",
     "original": "{n} albums selected · {t} tracks will be appended to {playlist}",
     "translation": "{n} albums selected · {t} tracks will be appended to {playlist}"
   },
+  "add.foot.added": {
+    "context": "Running total in the add-albums modal footer, screen 07, on the two tabs where each press writes a record. Past tense: these are already in the playlist. Needs a singular form at n=1. {playlist} is the Queue playlist name.",
+    "original": "{n} albums added · {t} tracks appended to {playlist}",
+    "translation": "{n} albums added · {t} tracks appended to {playlist}"
+  },
   "add.cancel": {
-    "context": "Secondary button in the add-albums modal footer.",
+    "context": "Secondary button in the add-albums modal footer, on the From a playlist tab. Drops what was ticked without writing it.",
     "original": "Cancel",
     "translation": "Cancel"
   },
   "add.confirm": {
-    "context": "Primary button in the add-albums modal footer.",
+    "context": "Primary button in the add-albums modal footer, on the From a playlist tab, screens 07b and 07c. Writes the ticked albums.",
     "original": "Add to Queue",
     "translation": "Add to Queue"
+  },
+  "add.done": {
+    "context": "Primary button in the add-albums modal footer, screen 07, on the Search Spotify and Saved albums tabs. Only closes the modal: each record went in when its own button was pressed.",
+    "original": "Done",
+    "translation": "Done"
   },
   "add.foot.empty": {
     "context": "Add-albums modal footer before anything is selected, in place of add.foot.count. Screen 07b, where there is nothing to select yet.",

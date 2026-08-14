@@ -112,41 +112,118 @@ describe('AddAlbumsModal', () => {
     expect(screen.queryByRole('button', { name: '+ Queue' })).not.toBeInTheDocument();
   });
 
-  it('counts what has been picked, and what it will cost the Queue', async () => {
-    setup({ 'q=w': { albums: [anAlbum()] } });
-    await userEvent.type(screen.getByRole('textbox'), 'w');
-    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
-    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
-    expect(screen.getByText('1 album selected')).toBeInTheDocument();
-    expect(screen.getByText(/10 tracks will be appended to/)).toBeInTheDocument();
-  });
-
-  it('lets a pick be taken back', async () => {
-    setup({ 'q=w': { albums: [anAlbum()] } });
-    await userEvent.type(screen.getByRole('textbox'), 'w');
-    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
-    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
-    await userEvent.click(screen.getByRole('button', { name: '✓ Added' }));
-    expect(screen.getByText('0 albums selected')).toBeInTheDocument();
-  });
-
-  it('adds what was picked and closes', async () => {
+  it('queues the record on the one press, with nothing to confirm', async () => {
     const { onAdd, onOpenChange } = setup({ 'q=w': { albums: [anAlbum()] } });
     await userEvent.type(screen.getByRole('textbox'), 'w');
     await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
     await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Add to Queue' }));
+
     await waitFor(() => expect(onAdd).toHaveBeenCalledWith(['a1']));
+    // The modal stays put: adding one record is not the end of the visit.
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Add to Queue' })).not.toBeInTheDocument();
+  });
+
+  it('says the record is in, rather than offering to add it again', async () => {
+    setup({ 'q=w': { albums: [anAlbum()] } });
+    await userEvent.type(screen.getByRole('textbox'), 'w');
+    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
+
+    await waitFor(() => expect(screen.getByText('✓ Added')).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: '+ Queue' })).not.toBeInTheDocument();
+  });
+
+  it('totals up what the visit has added', async () => {
+    setup({ 'q=w': { albums: [anAlbum(), anAlbum({ id: 'a2', name: 'Front Row Seat', totalTracks: 4 })] } });
+    await userEvent.type(screen.getByRole('textbox'), 'w');
+    await waitFor(() => expect(screen.getAllByRole('button', { name: '+ Queue' })).toHaveLength(2));
+
+    const [first, second] = screen.getAllByRole('button', { name: '+ Queue' });
+    await userEvent.click(first!);
+    await waitFor(() => expect(screen.getByText('1 album added')).toBeInTheDocument());
+    expect(screen.getByText(/10 tracks appended to/)).toBeInTheDocument();
+
+    await userEvent.click(second!);
+    await waitFor(() => expect(screen.getByText('2 albums added')).toBeInTheDocument());
+    expect(screen.getByText(/14 tracks appended to/)).toBeInTheDocument();
+  });
+
+  it('leaves the focus on the row it just added, not back at the top', async () => {
+    // The pressed button is unmounted, and a dialog with nothing focused sends
+    // the next Tab to its ✕ — which would restart a run of adds at the top of
+    // the modal every time.
+    setup({ 'q=w': { albums: [anAlbum(), anAlbum({ id: 'a2', name: 'Front Row Seat' })] } });
+    await userEvent.type(screen.getByRole('textbox'), 'w');
+    await waitFor(() => expect(screen.getAllByRole('button', { name: '+ Queue' })).toHaveLength(2));
+
+    await userEvent.click(screen.getAllByRole('button', { name: '+ Queue' })[0]!);
+    // The chip takes the focus but not a tab stop, so it is the element
+    // carrying tabindex="-1" that should have ended up with it.
+    await waitFor(() =>
+      expect(screen.getByText('✓ Added').closest('[tabindex="-1"]')).toHaveFocus(),
+    );
+
+    // And the next stop down is the next record, not somewhere back up the page.
+    await userEvent.tab();
+    expect(screen.getByRole('button', { name: '+ Queue' })).toHaveFocus();
+  });
+
+  it('counts nothing before anything has been added', async () => {
+    setup({ 'q=w': { albums: [anAlbum()] } });
+    await userEvent.type(screen.getByRole('textbox'), 'w');
+    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
+    expect(screen.queryByText(/albums added/)).not.toBeInTheDocument();
+  });
+
+  it('reports a refused write and leaves the button to try again', async () => {
+    const { onAdd } = setup({ 'q=w': { albums: [anAlbum()] } });
+    onAdd.mockResolvedValue('Spotify said no');
+    await userEvent.type(screen.getByRole('textbox'), 'w');
+    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
+
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Spotify said no'));
+    expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument();
+    expect(screen.queryByText('✓ Added')).not.toBeInTheDocument();
+  });
+
+  it('closes when the visit is done', async () => {
+    const { onAdd, onOpenChange } = setup();
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(onAdd).not.toHaveBeenCalled();
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('will not add nothing', () => {
-    setup();
+  it('does not carry what it added into the next visit', async () => {
+    // The ✕ is the close that doesn't go through Done, and a chip left standing
+    // from a previous visit would claim a record went in on this one.
+    const props = { onOpenChange: vi.fn(), onAdd: vi.fn(), fetchCatalogue: stubFetch({ 'q=w': { albums: [anAlbum()] } }).impl };
+    const { rerender } = render(<AddAlbumsModal isOpen {...props} />);
+    await userEvent.type(screen.getByRole('textbox'), 'w');
+    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
+    await waitFor(() => expect(screen.getByText('✓ Added')).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    rerender(<AddAlbumsModal isOpen={false} {...props} />);
+    rerender(<AddAlbumsModal isOpen {...props} />);
+
+    await waitFor(() => expect(screen.getByRole('button', { name: '+ Queue' })).toBeInTheDocument());
+    expect(screen.queryByText('✓ Added')).not.toBeInTheDocument();
+  });
+
+  it('will not add nothing', async () => {
+    setup(PLAYLIST_TAB);
+    await userEvent.click(screen.getByRole('tab', { name: 'From a playlist' }));
+    await waitFor(() => expect(screen.getByText('Road trip')).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Add to Queue' })).toBeDisabled();
   });
 
-  it('cancels without adding', async () => {
-    const { onAdd, onOpenChange } = setup();
+  it('cancels a playlist selection without adding it', async () => {
+    const { onAdd, onOpenChange } = setup(PLAYLIST_TAB);
+    await userEvent.click(screen.getByRole('tab', { name: 'From a playlist' }));
+    await waitFor(() => expect(screen.getByText('Road trip')).toBeInTheDocument());
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onAdd).not.toHaveBeenCalled();
     expect(onOpenChange).toHaveBeenCalledWith(false);
@@ -206,6 +283,22 @@ describe('AddAlbumsModal', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Add to Queue' }));
     await waitFor(() => expect(onAdd).toHaveBeenCalledWith(['alb1']));
+  });
+
+  it('keeps a refused batch on screen, ticks and all', async () => {
+    // Closing would throw away the selection a second attempt needs.
+    const { onAdd, onOpenChange } = setup(PLAYLIST_TAB);
+    onAdd.mockResolvedValue('Spotify said no');
+    await userEvent.click(screen.getByRole('tab', { name: 'From a playlist' }));
+    await waitFor(() => expect(screen.getByText('Road trip')).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('button', { name: /Road trip/ }));
+    await waitFor(() => expect(screen.getByText('Shameika')).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('checkbox', { name: /^Shameika/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add to Queue' }));
+
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Spotify said no'));
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.getByRole('checkbox', { name: /^Shameika/ })).toBeChecked();
   });
 
   it('takes the whole playlist in one go, and gives it back', async () => {

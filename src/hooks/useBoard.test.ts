@@ -322,6 +322,32 @@ describe('useBoard', () => {
       expect(writes[0]?.body).toEqual({ albumIds: ['a1', 'a2'], to: 'queue' });
     });
 
+    it('hands a refused add back to whatever asked for it', async () => {
+      // The add-albums modal writes a record per press and covers the board's
+      // own error line, so it has to be told rather than shown.
+      const { impl } = stubApi([ready()], { writeFails: true });
+      const { result } = renderHook(() => useBoard({ fetchImpl: impl }));
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      const answers: Array<string | null> = [];
+      await act(async () => {
+        answers.push(await result.current.addAlbums(['a1']));
+      });
+      expect(answers).toEqual(['Spotify said no']);
+    });
+
+    it('says nothing when the add went through', async () => {
+      const { impl } = stubApi([ready(), ready()]);
+      const { result } = renderHook(() => useBoard({ fetchImpl: impl }));
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      const answers: Array<string | null> = [];
+      await act(async () => {
+        answers.push(await result.current.addAlbums(['a1']));
+      });
+      expect(answers).toEqual([null]);
+    });
+
     it.each([
       ['move', (r: ReturnType<typeof useBoard>) => r.move(aCard({ id: 'a1', columnId: 'x1' }), 'x2')],
       ['remove', (r: ReturnType<typeof useBoard>) => r.remove(aCard({ id: 'a1', columnId: 'x1' }))],
