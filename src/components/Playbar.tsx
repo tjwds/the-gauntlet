@@ -2,6 +2,7 @@
 
 import { Button, buttonVariants, cn, Dropdown, Slider, Tooltip } from '@heroui/react';
 import { AlbumArt } from './AlbumArt';
+import { PendingButton } from './PendingButton';
 import { t } from '@/lib/copy';
 import { formatClock, formatDuration } from '@/lib/domain/format';
 import type { PlayerDevice, PlayerState, TransportCommand } from '@/hooks/usePlayer';
@@ -14,6 +15,14 @@ export interface PlaybarProps {
   albumPosition?: { trackNumber: number; totalTracks: number; msLeft: number } | null;
   onCommand(command: TransportCommand): void;
   onOpenDevices?(): void;
+  /**
+   * Put the record playing into the Queue. Passed only for a record on none of
+   * the seven playlists — one already on the board has a card to act on, and
+   * the playlist model can't hold it in two columns.
+   */
+  onAddToQueue?(): void;
+  /** The add is a Spotify write plus a board read, so it is worth showing. */
+  isAddingToQueue?: boolean;
 }
 
 export function Playbar({
@@ -23,6 +32,8 @@ export function Playbar({
   albumPosition = null,
   onCommand,
   onOpenDevices,
+  onAddToQueue,
+  isAddingToQueue,
 }: PlaybarProps) {
   const { track } = state;
   if (!track) return null;
@@ -49,6 +60,23 @@ export function Playbar({
             </div>
           )}
         </div>
+
+        {/*
+          A record put on from Spotify itself has no card anywhere on the board,
+          so this bar is the only place it is named while it plays — and the only
+          place it can be queued from without searching for it again.
+        */}
+        {onAddToQueue && (
+          <PendingButton
+            variant="primary"
+            size="sm"
+            className="shrink-0"
+            isPending={isAddingToQueue}
+            onPress={onAddToQueue}
+          >
+            {t('playing.addToQueue')}
+          </PendingButton>
+        )}
       </div>
 
       <div className="flex flex-col items-center gap-1.5">

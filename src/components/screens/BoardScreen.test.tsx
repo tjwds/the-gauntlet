@@ -614,6 +614,58 @@ describe('BoardScreen with the browser own plumbing', () => {
     await waitFor(() => expect(screen.getByText('Something Else')).toBeInTheDocument());
     expect(playbarArt().getByTestId('album-art-placeholder')).toBeInTheDocument();
   });
+
+  it('queues the record playing when none of the seven playlists holds it', async () => {
+    const { impl, writes } = stubApi({ '/api/player': offBoard({ imageUrl: null }) });
+    render(<BoardScreen fetchImpl={impl} />);
+    await waitFor(() => expect(screen.getByText('Something Else')).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
+    await waitFor(() =>
+      expect(writes).toContainEqual({
+        url: '/api/board/albums',
+        body: { albumIds: ['elsewhere'], to: 'queue' },
+      }),
+    );
+  });
+
+  it('offers no such button for a record already on the board', async () => {
+    const { impl } = stubApi({
+      '/api/player': {
+        playback: { isPlaying: true, shuffle: false, progressMs: 1000, albumId: 'a3' },
+        device: null,
+        repeat: 'off',
+        track: {
+          id: 'a3-t1',
+          name: '15 Step',
+          artist: 'Radiohead',
+          albumName: 'In Rainbows',
+          albumId: 'a3',
+          imageUrl: null,
+          durationMs: 237_000,
+          trackNumber: 1,
+        },
+      },
+    });
+    render(<BoardScreen fetchImpl={impl} />);
+    await waitFor(() => expect(screen.getByText('15 Step')).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: '+ Queue' })).toBeNull();
+  });
+
+  it('waits for the board before offering to queue anything', async () => {
+    // The bar arrives with the first playback poll, which can beat the board;
+    // until the board has been read there is no telling whether the record is
+    // already on it.
+    const impl = vi.fn(async (input: RequestInfo | URL) =>
+      String(input).startsWith('/api/player')
+        ? new Response(JSON.stringify(offBoard({ imageUrl: null })), { status: 200 })
+        : new Promise<Response>(() => {}),
+    ) as unknown as typeof fetch;
+
+    render(<BoardScreen fetchImpl={impl} />);
+    await waitFor(() => expect(screen.getByText('Something Else')).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: '+ Queue' })).toBeNull();
+  });
 });
 
 describe('filterBoard', () => {

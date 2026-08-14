@@ -334,6 +334,11 @@
     "original": "Undo",
     "translation": "Undo"
   },
+  "playing.addToQueue": {
+    "context": "Green button at the left of the playback bar, beside the record playing. Adds that record to the Queue column. Shown only while the record is on none of the seven playlists — one already on the board has a card to act on instead, and the playlist model can't hold it in two columns.",
+    "original": "+ Queue",
+    "translation": "+ Queue"
+  },
   "playing.shuffle.title": {
     "context": "Tooltip on the shuffle button in the playback bar, which is disabled whenever a board album is playing. Explains why rather than just greying out.",
     "original": "You can't shuffle here, we're listening to albums cover-to-cover!",

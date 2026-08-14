@@ -178,6 +178,25 @@ describe('Playbar', () => {
     expect(onCommand).toHaveBeenCalledWith({ command: 'volume', value: 65 });
   });
 
+  it('offers to queue the record playing when it has been given the way to', async () => {
+    const onAddToQueue = vi.fn();
+    setup({}, { onAddToQueue });
+    await userEvent.click(screen.getByRole('button', { name: '+ Queue' }));
+    expect(onAddToQueue).toHaveBeenCalled();
+  });
+
+  it('offers nothing for a record the board already holds', () => {
+    // No handler is passed for a record on one of the seven playlists, which is
+    // where the card that can act on it lives.
+    setup();
+    expect(screen.queryByRole('button', { name: '+ Queue' })).toBeNull();
+  });
+
+  it('shows the add happening, since it is a write and a board read', () => {
+    setup({}, { onAddToQueue: vi.fn(), isAddingToQueue: true });
+    expect(screen.getByTestId('pending-spinner')).toBeInTheDocument();
+  });
+
   it('is nothing at all when nothing is playing', () => {
     const { container } = render(
       <Playbar state={{ ...state, track: null }} devices={[]} onCommand={vi.fn()} />,
