@@ -29,6 +29,7 @@ export function BoardScreen({ user = null, canPlayInApp = true, fetchImpl }: Boa
   const [query, setQuery] = useState('');
   const [openAlbumId, setOpenAlbumId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [queueing, setQueueing] = useState(false);
 
   const board = useBoard({
     ...(fetchImpl ? { fetchImpl } : {}),
@@ -70,7 +71,22 @@ export function BoardScreen({ user = null, canPlayInApp = true, fetchImpl }: Boa
         }
       : null;
 
+  /**
+   * The record playing, when the board has been read and none of the seven
+   * playlists holds it. Asking the board rather than remembering the click is
+   * what makes the button disappear once the record is filed — and come back if
+   * it is taken off the board again.
+   */
+  const queueablePlayingId =
+    board.board !== null && playingAlbumId !== null && playingCard === null ? playingAlbumId : null;
+
   const openAlbum = board.board && openAlbumId ? findCard(board.board, openAlbumId) : null;
+
+  const queuePlaying = async (albumId: string) => {
+    setQueueing(true);
+    await board.addAlbums([albumId]);
+    setQueueing(false);
+  };
 
   const play = (album: BoardCard) => {
     if (!canPlayInApp) {
@@ -137,6 +153,12 @@ export function BoardScreen({ user = null, canPlayInApp = true, fetchImpl }: Boa
           albumPosition={nowPlaying}
           onCommand={(command) => void player.send(command)}
           onOpenDevices={() => void player.loadDevices()}
+          {...(queueablePlayingId
+            ? {
+                onAddToQueue: () => void queuePlaying(queueablePlayingId),
+                isAddingToQueue: queueing,
+              }
+            : {})}
         />
       )}
 
