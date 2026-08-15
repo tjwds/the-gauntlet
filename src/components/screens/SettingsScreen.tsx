@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Avatar, Button, Card, Chip, Spinner } from '@heroui/react';
 import { PendingButton } from '../PendingButton';
+import { ThemePicker } from '../ThemePicker';
 import { t } from '@/lib/copy';
 import { formatRelative } from '@/lib/domain/format';
 
@@ -40,6 +41,9 @@ export interface SettingsScreenProps {
  * — the listen rule, the number of stages, a repeat throttle, a confirm switch
  * and a default view. Each changes what a column means, so all five were fixed,
  * which left Settings with nothing to set.
+ *
+ * The theme is the one control that passes that test rather than failing it: it
+ * changes what the board looks like and nothing about what it says.
  */
 export function SettingsScreen({
   onDisconnect,
@@ -176,6 +180,21 @@ export function SettingsScreen({
               {t('settings.rescan')}
             </PendingButton>
           </Card.Footer>
+        </Card>
+
+        <h2 className="mt-8 mb-3 text-[15px] font-semibold tracking-tight">
+          {t('settings.appearance.head')}
+        </h2>
+        <Card>
+          {/* Wraps rather than squeezes: three radios and a sentence don't both
+              fit the width the narrow board is drawn at. */}
+          <div className="flex flex-wrap items-center gap-3.5 px-5 py-3.5">
+            <div className="flex-1">
+              <div className="text-sm font-medium">{t('settings.appearance.label')}</div>
+              <div className="text-[13px] text-muted">{t('settings.appearance.hint')}</div>
+            </div>
+            <ThemePicker />
+          </div>
         </Card>
 
         <h2 className="mt-8 mb-3 text-[15px] font-semibold tracking-tight">

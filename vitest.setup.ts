@@ -26,6 +26,27 @@ if (!globalThis.matchMedia) {
   })) as unknown as typeof globalThis.matchMedia;
 }
 
+// Node defines a `localStorage` global of its own, and with no valid
+// --localstorage-file behind it that global arrives with none of the methods on
+// it — which is what `window.localStorage` resolves to in here. The chosen
+// theme is kept there, so the tests need one that works.
+if (typeof globalThis.localStorage?.getItem !== 'function') {
+  const store = new Map<string, string>();
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: {
+      get length() {
+        return store.size;
+      },
+      key: (index: number) => [...store.keys()][index] ?? null,
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, String(value)),
+      removeItem: (key: string) => void store.delete(key),
+      clear: () => store.clear(),
+    } satisfies Storage,
+  });
+}
+
 if (!globalThis.ResizeObserver) {
   globalThis.ResizeObserver = class {
     observe() {}

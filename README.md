@@ -23,6 +23,11 @@ There's other tools to manage your albums, like being able to pick albums from t
 
 ![The add-albums dialog on the saved-albums tab](docs/screenshots/add-albums.png)
 
+**Dark** — it follows whatever the machine is set to. Settings holds the override, for a
+machine that's set to one and a listener who wants the other.
+
+![The board on a machine set to dark](docs/screenshots/board-dark.png)
+
 **First records** — what to queue, ranked from songs you already know.
 
 ![First records, suggested from your top songs](docs/screenshots/first-records.png)
@@ -39,7 +44,7 @@ There's other tools to manage your albums, like being able to pick albums from t
 
 ![The setup screen](docs/screenshots/setup.png)
 
-**Settings** — an account, seven playlists, nothing to configure.
+**Settings** — an account, seven playlists, and which theme to draw them in.
 
 ![The settings screen](docs/screenshots/settings.png)
 

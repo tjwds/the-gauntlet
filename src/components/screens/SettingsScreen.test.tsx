@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsScreen, type Account } from './SettingsScreen';
@@ -47,6 +47,13 @@ function setup(account: Account = anAccount()) {
   );
   return { onDisconnect, onDeletePlaylists, calls };
 }
+
+// The theme is kept on <html> and in storage, both of which outlive a render.
+afterEach(() => {
+  window.localStorage.clear();
+  document.documentElement.className = '';
+  document.documentElement.removeAttribute('data-theme');
+});
 
 describe('SettingsScreen', () => {
   it('names the account and its tier', async () => {
@@ -154,6 +161,15 @@ describe('SettingsScreen', () => {
       expect(onDeletePlaylists).not.toHaveBeenCalled();
       expect(screen.queryByText(/removes all seven playlists/)).not.toBeInTheDocument();
     });
+  });
+
+  it('offers the theme, which is the one thing here that is a setting', async () => {
+    setup();
+    await waitFor(() => expect(screen.getByRole('radiogroup')).toHaveAccessibleName('Theme'));
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
   });
 
   it('goes back to the board', async () => {

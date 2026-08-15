@@ -729,6 +729,36 @@
     "original": "Re-scan playlists",
     "translation": "Re-scan playlists"
   },
+  "settings.appearance.head": {
+    "context": "Section heading above the theme control on Settings.",
+    "original": "Appearance",
+    "translation": "Appearance"
+  },
+  "settings.appearance.label": {
+    "context": "Row label on the theme control on Settings, and the accessible name of the three-way choice itself.",
+    "original": "Theme",
+    "translation": "Theme"
+  },
+  "settings.appearance.hint": {
+    "context": "Grey line under the theme row label on Settings, saying where the choice is kept. There is no database, so it is this browser or nothing.",
+    "original": "System follows the device. Anything else is remembered in this browser.",
+    "translation": "System follows the device. Anything else is remembered in this browser."
+  },
+  "settings.appearance.system": {
+    "context": "First of the three theme choices on Settings. Follows the light-or-dark preference the operating system reports, and is the default.",
+    "original": "System",
+    "translation": "System"
+  },
+  "settings.appearance.light": {
+    "context": "Second of the three theme choices on Settings.",
+    "original": "Light",
+    "translation": "Light"
+  },
+  "settings.appearance.dark": {
+    "context": "Third of the three theme choices on Settings.",
+    "original": "Dark",
+    "translation": "Dark"
+  },
   "settings.disconnect.head": {
     "context": "Section heading for the last panel on Settings.",
     "original": "Disconnect",

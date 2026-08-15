@@ -48,6 +48,16 @@ const SHOTS = [
     viewport: DESKTOP,
   },
   {
+    // The same board, photographed on a machine set to dark. Nothing about the
+    // demo changes: the appearance is a preference the browser reports, and the
+    // page reads it before it paints.
+    name: 'board-dark',
+    screen: 'board',
+    what: 'The board again, on a machine set to dark',
+    viewport: DESKTOP,
+    colorScheme: 'dark',
+  },
+  {
     name: 'playing',
     screen: 'playing',
     what: 'A record playing: playbar, level meter, and the pass so far',
@@ -113,7 +123,7 @@ const SHOTS = [
   {
     name: 'settings',
     screen: 'settings',
-    what: 'Settings: an account, seven playlists, nothing to configure',
+    what: 'Settings: an account, seven playlists, and which theme to draw them in',
     viewport: { width: 1440, height: 1000 },
     fullPage: true,
     ready: (page) => page.getByText('Gauntlet · Done').first().waitFor(),
@@ -270,7 +280,9 @@ async function capture(browser, shot, { base, out, scale }) {
     // Entry animations are the one thing between a screenshot and a blurred
     // half-open drawer.
     reducedMotion: 'reduce',
-    colorScheme: 'light',
+    // Named on every shot rather than left to the machine taking it, so two
+    // people retaking these get the same pictures.
+    colorScheme: shot.colorScheme ?? 'light',
   });
 
   try {

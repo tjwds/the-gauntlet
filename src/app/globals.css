@@ -2,7 +2,8 @@
 
 /*
  * HeroUI drives every accent surface — buttons, chips, focus rings, soft fills
- * — off `--accent`, so this is the whole override.
+ * — off `--accent`, so the accent is the whole override. Both themes below are
+ * HeroUI's otherwise.
  *
  * Deliberately not Spotify green: Spotify's design guidelines list their green
  * among the brand elements an integration's own logo mustn't borrow, and the
@@ -16,6 +17,34 @@
   [data-theme="light"] {
     --accent: oklch(0.55 0.21 288); /* #7250e2 */
     --accent-foreground: oklch(0.9911 0 0); /* #fcfcfc — 5.2:1 on the accent */
+  }
+
+  /*
+   * The same violet at the same hue, lifted until it reads on a near-black
+   * page: at the light theme's lightness it lands at 3.3:1 on the dark surface,
+   * under the 4.5:1 the drawer's played-track ticks and the ×N label need.
+   *
+   * Lifting it changes which end of the scale the foreground comes from — the
+   * near-white is 3.0:1 on the lighter violet — so the "G" and the labels on a
+   * filled accent go dark instead. That inversion is the visible consequence.
+   */
+  .dark,
+  [data-theme="dark"] {
+    --accent: oklch(0.67 0.185 288); /* #937dfe — 5.6:1 on the surface */
+    --accent-foreground: var(--eclipse); /* #18181b — 5.6:1 on the accent */
+
+    /*
+     * HeroUI draws a field's edge with `--field-shadow` and sets it to nothing
+     * in dark: there, a field is told apart from the page by being lighter than
+     * it. Cards break that. A card is `--surface`, and so is
+     * `--field-background`, so a field sitting on one is exactly its colour and
+     * has no edge at all — the unpicked theme radios below and the Add albums
+     * search box both vanish into their panel. Giving fields a border back is
+     * the smaller change: HeroUI's selected state already clears it
+     * (`border-color: transparent`), so a picked radio is untouched.
+     */
+    --border-width-field: 1px;
+    --field-border: var(--border);
   }
 
   html,
