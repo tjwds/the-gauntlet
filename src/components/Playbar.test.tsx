@@ -21,6 +21,7 @@ const state: PlayerState = {
   repeat: 'off',
   progressMs: 192_000,
   albumId: 'alb1',
+  albumContextId: 'alb1',
 };
 
 function setup(overrides: Partial<PlayerState> = {}, props: Partial<Parameters<typeof Playbar>[0]> = {}) {

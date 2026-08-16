@@ -6,6 +6,7 @@ const playing = {
   playback: { isPlaying: true, shuffle: false, progressMs: 60_000, albumId: 'alb1' },
   device: { id: 'dev1', name: 'MacBook Pro', type: 'Computer', is_active: true, volume_percent: 64 },
   repeat: 'off',
+  albumContextId: 'alb1',
   track: {
     id: 't1',
     name: 'Dream House',
@@ -46,6 +47,15 @@ describe('usePlayer', () => {
     await waitFor(() => expect(result.current.state.track?.name).toBe('Dream House'));
     expect(result.current.state.isPlaying).toBe(true);
     expect(result.current.state.albumId).toBe('alb1');
+    expect(result.current.state.albumContextId).toBe('alb1');
+  });
+
+  it('carries no record for a track that was not played as part of one', async () => {
+    const { result } = renderHook(() =>
+      usePlayer({ fetchImpl: stubApi({ ...playing, albumContextId: undefined }).impl }),
+    );
+    await waitFor(() => expect(result.current.state.track?.name).toBe('Dream House'));
+    expect(result.current.state.albumContextId).toBeNull();
   });
 
   it("uses the browser's own fetch when it is given none", async () => {

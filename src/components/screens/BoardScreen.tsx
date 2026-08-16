@@ -62,8 +62,16 @@ export function BoardScreen({ user = null, canPlayInApp = true, fetchImpl }: Boa
   const playingCard = board.board && playingAlbumId ? findCard(board.board, playingAlbumId) : null;
   const playingTrack = player.state.track;
 
+  /**
+   * Whether the record itself is on, rather than one of its tracks reached
+   * through a playlist, a radio or a search. Only then does the rest of the
+   * record follow the track — which is what makes "track 6 of 9 · 24m left" a
+   * fact about what is about to be heard rather than a guess.
+   */
+  const onTheRecord = playingAlbumId !== null && player.state.albumContextId === playingAlbumId;
+
   const nowPlaying =
-    playingCard && playingTrack?.id
+    onTheRecord && playingCard && playingTrack?.id
       ? {
           trackNumber: playingCard.tracks.findIndex((track) => track.id === playingTrack.id) + 1,
           totalTracks: playingCard.tracks.length,

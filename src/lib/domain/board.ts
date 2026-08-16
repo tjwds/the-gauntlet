@@ -174,3 +174,16 @@ export function playbackToSnapshot(state: PlaybackState | undefined | null): Pla
     timestampMs: state.timestamp,
   };
 }
+
+/**
+ * The record that was put on, which is what Spotify calls the context — not the
+ * album the playing track happens to belong to. A track reached through a
+ * playlist, a radio or a search still names its album, but nothing after it
+ * belongs to that album, so anything said about position in the record would be
+ * invention. Null whenever the thing playing isn't a record.
+ */
+export function albumContextId(state: PlaybackState | undefined | null): string | null {
+  const context = state?.context;
+  if (!context || context.type !== 'album') return null;
+  return /^spotify:album:(.+)$/.exec(context.uri)?.[1] ?? null;
+}

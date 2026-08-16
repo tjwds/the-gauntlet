@@ -773,7 +773,36 @@ describe('/api/player', () => {
 
   it('reports silence', async () => {
     const body = await (await getPlayer(new Request('https://x/api/player'))).json();
-    expect(body).toEqual({ playback: null, device: null, repeat: 'off', track: null });
+    expect(body).toEqual({
+      playback: null,
+      device: null,
+      repeat: 'off',
+      albumContextId: null,
+      track: null,
+    });
+  });
+
+  it('names the record that was put on, so position in it can be claimed', async () => {
+    useClient({
+      playbackState: vi.fn(async () =>
+        playbackState({ context: { uri: 'spotify:album:alb1', type: 'album' } }),
+      ),
+    });
+    const body = await (await getPlayer(new Request('https://x/api/player'))).json();
+    expect(body.albumContextId).toBe('alb1');
+  });
+
+  it('names no record for a track reached through a playlist', async () => {
+    // The track still belongs to an album, and the album still has tracks after
+    // it — but none of them is what plays next.
+    useClient({
+      playbackState: vi.fn(async () =>
+        playbackState({ context: { uri: 'spotify:playlist:pl1', type: 'playlist' } }),
+      ),
+    });
+    const body = await (await getPlayer(new Request('https://x/api/player'))).json();
+    expect(body.track.albumId).toBe('alb1');
+    expect(body.albumContextId).toBeNull();
   });
 
   it('copes with a track that has no album attached', async () => {

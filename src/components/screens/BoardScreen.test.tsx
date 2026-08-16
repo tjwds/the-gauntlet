@@ -19,7 +19,7 @@ vi.mock('@heroui/react', async (importOriginal) => {
   };
 });
 
-const silent = { playback: null, device: null, repeat: 'off', track: null };
+const silent = { playback: null, device: null, repeat: 'off', albumContextId: null, track: null };
 
 /** Playback of a record the board has never heard of, as `/api/player` reports it. */
 function offBoard({ imageUrl }: { imageUrl: string | null }) {
@@ -27,6 +27,7 @@ function offBoard({ imageUrl }: { imageUrl: string | null }) {
     playback: { isPlaying: true, shuffle: false, progressMs: 1000, albumId: 'elsewhere' },
     device: null,
     repeat: 'off',
+    albumContextId: 'elsewhere',
     track: {
       id: 'x1',
       name: 'Something Else',
@@ -364,6 +365,7 @@ describe('BoardScreen', () => {
         playback: { isPlaying: true, shuffle: false, progressMs: 1000, albumId: 'a3' },
         device: { id: 'd1', name: 'MacBook Pro', type: 'Computer', is_active: true, volume_percent: 50 },
         repeat: 'off',
+        albumContextId: 'a3',
         track: {
           id: 'a3-t1',
           name: '15 Step',
@@ -386,6 +388,63 @@ describe('BoardScreen', () => {
       'src',
       'https://i.scdn.co/mid.jpg',
     );
+  });
+
+  it('claims no position in the record for a track playing out of a playlist', async () => {
+    // The track belongs to a record on the board and the record has nine tracks
+    // after it, but a playlist is what is on: none of them plays next, so there
+    // is no such thing as how much of the record is left.
+    const { impl } = stubApi({
+      '/api/player': {
+        playback: { isPlaying: true, shuffle: false, progressMs: 1000, albumId: 'a3' },
+        device: null,
+        repeat: 'off',
+        albumContextId: null,
+        track: {
+          id: 'a3-t1',
+          name: '15 Step',
+          artist: 'Radiohead',
+          albumName: 'In Rainbows',
+          albumId: 'a3',
+          imageUrl: 'https://i.scdn.co/from-playback.jpg',
+          durationMs: 237_000,
+          trackNumber: 1,
+        },
+      },
+    });
+    render(<BoardScreen fetchImpl={impl} />);
+    await waitFor(() => expect(screen.getByText('15 Step')).toBeInTheDocument());
+    expect(screen.queryByText(/track \d+ of \d+ · .* left/)).toBeNull();
+    // The card goes back to saying what the record is, rather than where in it
+    // the listener supposedly is.
+    const card = within(screen.getByTestId('column-x3'));
+    expect(card.getByText('2007 · 10 trk · 40m')).toBeInTheDocument();
+  });
+
+  it('claims no position in the record for a record playing under another one', async () => {
+    // Spotify's autoplay carries on past the end of a record: the context still
+    // names the record that was put on while the track is from somewhere else.
+    const { impl } = stubApi({
+      '/api/player': {
+        playback: { isPlaying: true, shuffle: false, progressMs: 1000, albumId: 'a3' },
+        device: null,
+        repeat: 'off',
+        albumContextId: 'something-else',
+        track: {
+          id: 'a3-t1',
+          name: '15 Step',
+          artist: 'Radiohead',
+          albumName: 'In Rainbows',
+          albumId: 'a3',
+          imageUrl: null,
+          durationMs: 237_000,
+          trackNumber: 1,
+        },
+      },
+    });
+    render(<BoardScreen fetchImpl={impl} />);
+    await waitFor(() => expect(screen.getByText('15 Step')).toBeInTheDocument());
+    expect(screen.queryByText(/track \d+ of \d+ · .* left/)).toBeNull();
   });
 
   it('names who is signed in', async () => {

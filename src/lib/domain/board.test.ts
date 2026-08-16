@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   albumColumnIndex,
+  albumContextId,
   buildBoard,
   columnLabel,
   columnOf,
@@ -230,6 +231,38 @@ describe('playbackToSnapshot', () => {
     expect(playbackToSnapshot(playbackState({ item: aTrack({ id: null }) }))).toBeNull();
     expect(
       playbackToSnapshot(playbackState({ item: { ...aTrack(), album: undefined } })),
+    ).toBeNull();
+  });
+});
+
+describe('albumContextId', () => {
+  it('names the record that was put on', () => {
+    expect(
+      albumContextId(playbackState({ context: { uri: 'spotify:album:alb1', type: 'album' } })),
+    ).toBe('alb1');
+  });
+
+  it('says nothing for a track reached some other way', () => {
+    // Each of these plays a track that names an album of its own, and none of
+    // them will carry on through that album.
+    expect(
+      albumContextId(playbackState({ context: { uri: 'spotify:playlist:pl1', type: 'playlist' } })),
+    ).toBeNull();
+    expect(
+      albumContextId(playbackState({ context: { uri: 'spotify:artist:art1', type: 'artist' } })),
+    ).toBeNull();
+    // A track played from search has no context at all.
+    expect(albumContextId(playbackState())).toBeNull();
+  });
+
+  it('has nothing to say when nothing is playing', () => {
+    expect(albumContextId(undefined)).toBeNull();
+    expect(albumContextId(null)).toBeNull();
+  });
+
+  it('refuses a context that calls itself an album without naming one', () => {
+    expect(
+      albumContextId(playbackState({ context: { uri: 'spotify:album:', type: 'album' } })),
     ).toBeNull();
   });
 });

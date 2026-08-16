@@ -32,6 +32,12 @@ export interface PlayerState {
   repeat: 'off' | 'track' | 'context';
   progressMs: number;
   albumId: string | null;
+  /**
+   * The record that was put on, from Spotify's playback context. Null unless a
+   * record is what is playing — `albumId` is the current track's album, which a
+   * playlist or a radio names just as readily.
+   */
+  albumContextId: string | null;
 }
 
 export type TransportCommand =
@@ -47,6 +53,7 @@ const IDLE: PlayerState = {
   repeat: 'off',
   progressMs: 0,
   albumId: null,
+  albumContextId: null,
 };
 
 export interface UsePlayerOptions {
@@ -110,6 +117,7 @@ export function usePlayer({
         repeat: body.repeat ?? 'off',
         progressMs: body.playback?.progressMs ?? 0,
         albumId: body.playback?.albumId ?? null,
+        albumContextId: body.albumContextId ?? null,
       };
       setState(next);
 

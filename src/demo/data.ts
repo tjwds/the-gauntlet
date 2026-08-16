@@ -257,6 +257,8 @@ export interface DemoPlayback {
   } | null;
   device: PlayerDevice | null;
   repeat: 'off' | 'track' | 'context';
+  /** The record that was put on, which the demo always plays as a record. */
+  albumContextId: string | null;
   track: PlayerTrack | null;
 }
 
@@ -264,6 +266,7 @@ export const IDLE_PLAYBACK: DemoPlayback = {
   playback: null,
   device: null,
   repeat: 'off',
+  albumContextId: null,
   track: null,
 };
 
@@ -293,6 +296,7 @@ export function playing(
     },
     device: DEMO_DEVICES[0] ?? null,
     repeat: 'off',
+    albumContextId: target.id,
     track: {
       id: track.id,
       name: track.name,

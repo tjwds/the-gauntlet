@@ -1,6 +1,6 @@
 import { json, jsonError, readJson, withSpotify } from '@/lib/api/route';
 import { joinArtists, pickImage } from '@/lib/domain/albums';
-import { playbackToSnapshot } from '@/lib/domain/board';
+import { albumContextId, playbackToSnapshot } from '@/lib/domain/board';
 import { displayName } from '@/lib/domain/text';
 import { pickPlaybackDevice } from '@/lib/spotify/devices';
 import { NO_ACTIVE_DEVICE } from '@/lib/spotify/errors';
@@ -12,6 +12,10 @@ export const GET = withSpotify(async ({ client }) => {
     playback: playbackToSnapshot(state),
     device: state?.device ?? null,
     repeat: state?.repeat_state ?? 'off',
+    // Which record is on, as against which record the current track came from.
+    // The two part company the moment playback is a playlist or a radio, and
+    // position in the record is only a fact while they agree.
+    albumContextId: albumContextId(state),
     track: state?.item
       ? {
           id: state.item.id,
